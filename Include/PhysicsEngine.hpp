@@ -9,7 +9,8 @@
 class PhysicsEngine
 {
 private:
-    double previousTime, deltaTime, accumulator;
+    Uint64 previousTime;
+    double accumulator;
     std::vector<std::unique_ptr<SimulatableObject>> simulatableObjects;
 
 public:

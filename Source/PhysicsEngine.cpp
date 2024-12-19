@@ -1,23 +1,28 @@
 #include <PhysicsEngine.hpp>
 
+#define DEBUG 1
+
 PhysicsEngine::PhysicsEngine(float fps)
 {
-    this->previousTime = SDL_GetTicks();
-    this->timestep = (1.0f / fps) * 1000;
+    this->timestep = (1.0f / fps);
 }
 
 PhysicsEngine::~PhysicsEngine()
 {
+    this->previousTime = SDL_GetPerformanceCounter();
 }
 
 void PhysicsEngine::update()
 {
-    double currentTime = SDL_GetTicks();
-    const double maxDeltaTime = 100.0f;
-    this->deltaTime = std::min(currentTime - previousTime, maxDeltaTime);
-    this->previousTime = currentTime;
+    Uint64 currentTime = SDL_GetPerformanceCounter();
+    const double maxDeltaTime = 0.1f;
+    double deltaTime;
+    
+    deltaTime = (currentTime - previousTime) / (double)SDL_GetPerformanceFrequency();
+    deltaTime = std::min(deltaTime, maxDeltaTime);
+    previousTime = currentTime;
 
-    this->accumulator += this->deltaTime; 
+    this->accumulator += deltaTime; 
 
     // TODO: After the basic simulatiion is running with a fixed timestep 
     // Try implementing render interpolation https://gafferongames.com/post/fix_your_timestep/
@@ -25,11 +30,12 @@ void PhysicsEngine::update()
     {
         for (auto& object : this->simulatableObjects)
         {
-            std::cout << "Last Update Was: " << this->deltaTime << "\n";
-            //std::cout << "Tick was: " << SDL_GetTicks() << "\n";
+            #ifdef DEBUG
+            std::cout << "Last Update Was: " << deltaTime << "\n";
+            #endif
             object->update(this->timestep);
         }
-        this->accumulator -= this->timestep;
+        accumulator -= this->timestep;
     }
 
 }
