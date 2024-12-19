@@ -9,10 +9,11 @@
 class PhysicsEngine
 {
 private:
-    float timestep, previousTime, deltaTime, accumulator;
+    double previousTime, deltaTime, accumulator;
     std::vector<std::unique_ptr<SimulatableObject>> simulatableObjects;
 
 public:
+    double timestep;
     PhysicsEngine(float fps);
     ~PhysicsEngine();
     void update();
