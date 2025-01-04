@@ -1,6 +1,6 @@
 #include <PhysicsRenderer.hpp>
 
-#define DEBUG
+// #define DEBUG
 
 int PhysicsRenderer::height = 0;
 int PhysicsRenderer::width = 0;
@@ -63,6 +63,9 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<SimulatableObjec
 {
     // Physics engine handles everything using cartesian coordinates so we need to convert to SDL coordinates
     int cartesianX, cartesianY;
+
+    SDL_Color clearColor = {0, 0, 0, 255};
+    clearScreen(clearColor);
 
     for (const auto &simulatableObject : simulatableObjects)
     {
