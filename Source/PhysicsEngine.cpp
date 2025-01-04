@@ -1,10 +1,11 @@
 #include <PhysicsEngine.hpp>
 
-#define DEBUG 1
+#define DEBUG
 
-PhysicsEngine::PhysicsEngine(float fps)
+PhysicsEngine::PhysicsEngine(float fps, Bounds simulationBounds)
 {
     this->timestep = (1.0f / fps);
+    this->simulationBounds = simulationBounds;
 }
 
 PhysicsEngine::~PhysicsEngine()
@@ -26,16 +27,29 @@ void PhysicsEngine::update()
 
     // TODO: After the basic simulatiion is running with a fixed timestep 
     // Try implementing render interpolation https://gafferongames.com/post/fix_your_timestep/
-    while (this->accumulator >= this->timestep)
+    for (auto& object : this->simulatableObjects)
     {
-        for (auto& object : this->simulatableObjects)
-        {
-            #ifdef DEBUG
-            std::cout << "Last Update Was: " << deltaTime << "\n";
-            #endif
-            object->update(this->timestep);
-        }
-        accumulator -= this->timestep;
+        object->update(this->timestep);
+        checkBounds(object);
+    }
+}
+
+void PhysicsEngine::checkBounds(std::unique_ptr<SimulatableObject> &object)
+{
+    if (object->y > this->simulationBounds.y_max || object->y <= this->simulationBounds.y_min)
+    {
+        #ifdef DEBUG
+        std::cout << "Object is out of y bounds!!!" << std::endl;
+        #endif
+        object->vy = 0;
+    }
+
+    else if (object->x > this->simulationBounds.x_max || object->x <= this->simulationBounds.x_min)
+    {
+        #ifdef DEBUG
+        std::cout << "Object is out of x bounds!!!" << std::endl;
+        #endif
+        object->vx = 0;
     }
 }
 
