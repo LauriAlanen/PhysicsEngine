@@ -1,5 +1,7 @@
 #include <PhysicsRenderer.hpp>
 
+#define DEBUG
+
 int PhysicsRenderer::height = 0;
 int PhysicsRenderer::width = 0;
 
@@ -10,10 +12,10 @@ PhysicsRenderer::PhysicsRenderer(const char* title)
         exit(1);
     }
 
-    // SDL_Rect displayBounds;
-    // SDL_GetDisplayBounds(0, &displayBounds);
-    PhysicsRenderer::height = WINDOW_SIZE_H;
-    PhysicsRenderer::width = WINDOW_SIZE_W;
+    SDL_Rect displayBounds;
+    SDL_GetDisplayBounds(0, &displayBounds);
+    PhysicsRenderer::height = displayBounds.y;
+    PhysicsRenderer::width = displayBounds.x;
 
     window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_SIZE_W, WINDOW_SIZE_H, SDL_WINDOW_SHOWN);
     if (!window) {
@@ -59,11 +61,20 @@ void PhysicsRenderer::present()
 
 void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<SimulatableObject>> &simulatableObjects)
 {
+    // Physics engine handles everything using cartesian coordinates so we need to convert to SDL coordinates
+    int cartesianX, cartesianY;
+
     for (const auto &simulatableObject : simulatableObjects)
     {
+        cartesianX = this->width - simulatableObject->x;
+        cartesianY = this->height - simulatableObject->y;
         SDL_Color purple = {128, 0, 128, 255};
         SDL_SetRenderDrawColor(renderer, purple.r, purple.g, purple.b, purple.a);
-        SDL_Rect rect = {simulatableObject->x_coordinate, simulatableObject->y_coordinate, PARTICLE_SIZE, PARTICLE_SIZE};
+        SDL_Rect rect = {cartesianX, cartesianY, PARTICLE_SIZE, PARTICLE_SIZE};
         SDL_RenderFillRect(renderer, &rect);
+
+        #ifdef DEBUG
+        std::cout << "Drawing object at : " << cartesianX << ", " << cartesianY << std::endl;
+        #endif
     }
 }
