@@ -17,7 +17,7 @@ class PhysicsEngine
 {
 private:
     Uint64 previousTime;
-    double accumulator;
+    double accumulator, simulationTime;
     std::vector<std::unique_ptr<SimulatableObject>> simulatableObjects;
     Bounds simulationBounds;
 
