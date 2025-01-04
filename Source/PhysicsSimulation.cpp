@@ -2,14 +2,17 @@
 #include <PhysicsEngine.hpp>
 #include <SimulatableObjects.hpp>
 
-#define SIMULATION_FPS 120.0f
+#define SIMULATION_FPS 60.0f
 
 int main() {
 
-    PhysicsRenderer renderer("Physics Renderer", 1200, 900);
+    PhysicsRenderer renderer("Physics Renderer", 1000, 800);
 	PhysicsEngine engine(SIMULATION_FPS);
 
-	engine.addSimulatableObject(std::make_unique<Particle>(20, 100));
+	engine.addSimulatableObject(std::make_unique<Particle>(100, 500));
+	engine.addSimulatableObject(std::make_unique<Particle>(200, 1000));
+	engine.addSimulatableObject(std::make_unique<Particle>(300, 20));
+	engine.addSimulatableObject(std::make_unique<Particle>(400, 300));
 
     bool running = true;
     SDL_Event event;
@@ -30,8 +33,8 @@ int main() {
             SDL_Delay((engine.timestep - frameTime) * 1000); // Convert to ms for SDL_Delay
         }
 
-        engine.update();
-        // TODO: Add interpolation
+        engine.update(); // Update only physics
+        renderer.renderObjects(engine.getSimulatableObjects()); // Now update the render with new positions
         renderer.present();   
     }
 

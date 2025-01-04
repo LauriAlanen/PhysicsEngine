@@ -1,5 +1,8 @@
 #include <PhysicsRenderer.hpp>
 
+int PhysicsRenderer::height = 0;
+int PhysicsRenderer::width = 0;
+
 PhysicsRenderer::PhysicsRenderer(const char* title, int width, int height) 
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -13,6 +16,8 @@ PhysicsRenderer::PhysicsRenderer(const char* title, int width, int height)
         SDL_Quit();
         exit(1);
     }
+    PhysicsRenderer::height = height;
+    PhysicsRenderer::width = width;
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
@@ -46,4 +51,15 @@ void PhysicsRenderer::clearScreen(SDL_Color color)
 void PhysicsRenderer::present() 
 {
     SDL_RenderPresent(renderer);
+}
+
+void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<SimulatableObject>> &simulatableObjects)
+{
+    for (const auto &simulatableObject : simulatableObjects)
+    {
+        SDL_Color purple = {128, 0, 128, 255};
+        SDL_SetRenderDrawColor(renderer, purple.r, purple.g, purple.b, purple.a);
+        SDL_Rect rect = {simulatableObject->x_coordinate, simulatableObject->y_coordinate, PARTICLE_SIZE, PARTICLE_SIZE};
+        SDL_RenderFillRect(renderer, &rect);
+    }
 }

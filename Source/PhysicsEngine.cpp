@@ -37,10 +37,14 @@ void PhysicsEngine::update()
         }
         accumulator -= this->timestep;
     }
-
 }
 
 void PhysicsEngine::addSimulatableObject(std::unique_ptr<SimulatableObject> object)
 {
     this->simulatableObjects.push_back(std::move(object));
+}
+
+std::vector<std::unique_ptr<SimulatableObject>>& PhysicsEngine::getSimulatableObjects()
+{
+    return this->simulatableObjects;
 }
