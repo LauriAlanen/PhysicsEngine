@@ -2,11 +2,11 @@
 #include <PhysicsEngine.hpp>
 #include <SimulatableObjects.hpp>
 
-#define SIMULATION_FPS 60.0f
+#define SIMULATION_FPS 200.0f
 
 int main() {
 
-    PhysicsRenderer renderer("Physics Renderer", 1000, 800);
+    PhysicsRenderer renderer("Physics Renderer");
 	PhysicsEngine engine(SIMULATION_FPS);
 
 	engine.addSimulatableObject(std::make_unique<Particle>(100, 500));

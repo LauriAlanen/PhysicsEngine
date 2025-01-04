@@ -3,21 +3,25 @@
 int PhysicsRenderer::height = 0;
 int PhysicsRenderer::width = 0;
 
-PhysicsRenderer::PhysicsRenderer(const char* title, int width, int height) 
+PhysicsRenderer::PhysicsRenderer(const char* title) 
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
         exit(1);
     }
 
-    window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
+    // SDL_Rect displayBounds;
+    // SDL_GetDisplayBounds(0, &displayBounds);
+    PhysicsRenderer::height = WINDOW_SIZE_H;
+    PhysicsRenderer::width = WINDOW_SIZE_W;
+
+    window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_SIZE_W, WINDOW_SIZE_H, SDL_WINDOW_SHOWN);
     if (!window) {
         std::cerr << "Error creating SDL window: " << SDL_GetError() << std::endl;
         SDL_Quit();
         exit(1);
     }
-    PhysicsRenderer::height = height;
-    PhysicsRenderer::width = width;
+    SDL_SetWindowResizable(window, SDL_FALSE);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {

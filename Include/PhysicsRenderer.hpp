@@ -6,6 +6,9 @@
 #include <memory>
 #include <SimulatableObjects.hpp>
 
+#define WINDOW_SIZE_W 1800
+#define WINDOW_SIZE_H 900
+
 class PhysicsRenderer 
 {
     private:
@@ -13,7 +16,7 @@ class PhysicsRenderer
         SDL_Renderer* renderer;
 
     public:
-        PhysicsRenderer(const char* title, int width, int height);
+        PhysicsRenderer(const char* title);
         ~PhysicsRenderer();
 
         static int width, height;
