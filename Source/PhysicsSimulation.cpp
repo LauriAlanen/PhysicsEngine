@@ -1,18 +1,15 @@
-#include <PhysicsRenderer.hpp>
-#include <PhysicsEngine.hpp>
-#include <SimulatableObjects.hpp>
+#include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 200.0f
+#define SIMULATION_FPS 500.0f
 
-int main() {
-
+int main() 
+{
     PhysicsRenderer renderer("Physics Renderer");
-	PhysicsEngine engine(SIMULATION_FPS);
 
-	engine.addSimulatableObject(std::make_unique<Particle>(100, 500));
-	engine.addSimulatableObject(std::make_unique<Particle>(200, 1000));
-	engine.addSimulatableObject(std::make_unique<Particle>(300, 20));
-	engine.addSimulatableObject(std::make_unique<Particle>(400, 300));
+    Bounds simulationBounds(0, 0, renderer.width, renderer.height);
+	PhysicsEngine engine(SIMULATION_FPS, simulationBounds);
+
+	engine.addSimulatableObject(std::make_unique<Particle>(100, 500, 0, 0));
 
     bool running = true;
     SDL_Event event;
