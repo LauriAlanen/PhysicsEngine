@@ -27,11 +27,20 @@ void PhysicsEngine::update()
 
     // TODO: After the basic simulatiion is running with a fixed timestep 
     // Try implementing render interpolation https://gafferongames.com/post/fix_your_timestep/
-    for (auto& object : this->simulatableObjects)
+    while (this->accumulator >= deltaTime)
     {
-        object->update(this->timestep);
-        checkBounds(object);
+        for (auto& object : this->simulatableObjects)
+        {
+            object->update(this->timestep);
+            checkBounds(object);
+        }
+        this->accumulator -= deltaTime;
+        this->simulationTime += deltaTime;
     }
+    #ifdef DEBUG
+    std::cout << "Simulationtime : " << this->simulationTime << std::endl;
+    #endif
+
 }
 
 void PhysicsEngine::checkBounds(std::unique_ptr<SimulatableObject> &object)
