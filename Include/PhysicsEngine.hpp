@@ -19,5 +19,6 @@ public:
     ~PhysicsEngine();
     void update();
     void addSimulatableObject(std::unique_ptr<SimulatableObject> object);
+    std::vector<std::unique_ptr<SimulatableObject>>& getSimulatableObjects();
 };
 
