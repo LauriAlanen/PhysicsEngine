@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
-#define PARTICLE_SIZE 1
+#define PARTICLE_SIZE 10
 
 class SimulatableObject
 {
