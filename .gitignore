@@ -1,5 +1,7 @@
 build/
 .cache/
+c_cpp_properties.json
+settings.json
 # Prerequisites
 *.d
 
