@@ -1,6 +1,9 @@
 #include <PhysicsSimulation.hpp>
+#include <cstdlib> // For rand() and srand()
+#include <ctime>   // For time() to seed the random number generator
 
-#define SIMULATION_FPS 100.0f
+#define SIMULATION_FPS 60.0f
+// #define DEBUG
 
 int main() 
 {
@@ -9,9 +12,18 @@ int main()
     Bounds simulationBounds(0, 0, renderer.width, renderer.height);
 	PhysicsEngine engine(SIMULATION_FPS, simulationBounds);
 
-	engine.addSimulatableObject(std::make_unique<Particle>(500, 800, 0, 0));
-	engine.addSimulatableObject(std::make_unique<Particle>(400, 1000, 0, 0));
-	engine.addSimulatableObject(std::make_unique<Particle>(1000, 500, 0, 0));
+    srand(static_cast<unsigned int>(time(0))); // Seed the random number generator
+    
+    // Add 100 particles at random positions
+    for (int i = 0; i < 10000; ++i) 
+    {
+        // Generate random positions within some range
+        double randomX = rand() % (renderer.width * 2);   // Random X position (width of screen)
+        double randomY = rand() % (renderer.height);  // Random Y position (height of screen)
+        
+        // Create a new Particle with random positions (and zero velocity)
+        engine.addSimulatableObject(std::make_unique<Particle>(randomX, randomY, 1.0, 0.0, 0.0));
+    }
 
     bool running = true;
     SDL_Event event;
@@ -23,8 +35,8 @@ int main()
             }
         }
 
-        engine.update(); // Update only physics
-        renderer.renderObjects(engine.getSimulatableObjects()); // Now update the render with new positions
+        double interpolationFactor = engine.update(); // Update physics and return the interpolationFactor
+        renderer.renderObjects(engine.getSimulatableObjects(), interpolationFactor); // Now update the render with new positions using interpolationFactor
         renderer.present();   
     }
 

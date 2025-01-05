@@ -59,20 +59,27 @@ void PhysicsRenderer::present()
     SDL_RenderPresent(renderer);
 }
 
-void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<SimulatableObject>> &simulatableObjects)
+void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<SimulatableObject>> &simulatableObjects, double interpolationFactor)
 {
     // Physics engine handles everything using cartesian coordinates so we need to convert to SDL coordinates
-    int cartesianX, cartesianY;
 
     SDL_Color clearColor = {0, 0, 0, 255};
     clearScreen(clearColor);
 
     for (const auto &simulatableObject : simulatableObjects)
     {
-        cartesianX = this->width - simulatableObject->x;
-        cartesianY = this->height - simulatableObject->y;
-        SDL_Color purple = {128, 0, 128, 255};
-        SDL_SetRenderDrawColor(renderer, purple.r, purple.g, purple.b, purple.a);
+        float interpolatedX = simulatableObject->previousState.x * (1.0f - interpolationFactor) + simulatableObject->currentState.x * interpolationFactor;
+        float interpolatedY = simulatableObject->previousState.y * (1.0f - interpolationFactor) + simulatableObject->currentState.y * interpolationFactor;
+        int cartesianX = interpolatedX;
+        int cartesianY = this->height - interpolatedY;
+
+        SDL_Color randomColor = {
+            static_cast<Uint8>(rand() % 256), // Random red value between 0 and 255
+            static_cast<Uint8>(rand() % 256), // Random green value between 0 and 255
+            static_cast<Uint8>(rand() % 256), // Random blue value between 0 and 255
+            255                                // Alpha channel set to 255 (fully opaque)
+        };
+        SDL_SetRenderDrawColor(renderer, randomColor.r, randomColor.g, randomColor.b, randomColor.a);
         SDL_Rect rect = {cartesianX, cartesianY, PARTICLE_SIZE, PARTICLE_SIZE};
         SDL_RenderFillRect(renderer, &rect);
 

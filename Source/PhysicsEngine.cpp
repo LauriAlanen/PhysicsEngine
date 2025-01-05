@@ -1,64 +1,64 @@
 #include <PhysicsEngine.hpp>
 
-#define DEBUG
+// #define DEBUG
 
 PhysicsEngine::PhysicsEngine(float fps, Bounds simulationBounds)
 {
-    this->timestep = (1.0f / fps);
+    this->deltaTime = (1.0f / fps);
     this->simulationBounds = simulationBounds;
 }
 
 PhysicsEngine::~PhysicsEngine()
 {
-    this->previousTime = SDL_GetPerformanceCounter();
+    this->currentTime = SDL_GetPerformanceCounter();
 }
 
-void PhysicsEngine::update()
+double PhysicsEngine::update()
 {
-    Uint64 currentTime = SDL_GetPerformanceCounter();
-    const double maxDeltaTime = 0.1f;
-    double deltaTime;
+    Uint64 newTime = SDL_GetPerformanceCounter();
     
-    deltaTime = (currentTime - previousTime) / (double)SDL_GetPerformanceFrequency();
-    deltaTime = std::min(deltaTime, maxDeltaTime);
-    previousTime = currentTime;
+    double frameTime;
+    frameTime = (newTime - this->currentTime) / (double)SDL_GetPerformanceFrequency();
+    if (frameTime > 0.25f)
+    {
+        frameTime = 0.25f;
+    }
+    this->currentTime = newTime;
 
-    this->accumulator += deltaTime; 
+    this->accumulator += frameTime; 
 
-    // TODO: After the basic simulatiion is running with a fixed timestep 
-    // Try implementing render interpolation https://gafferongames.com/post/fix_your_timestep/
     while (this->accumulator >= deltaTime)
     {
         for (auto& object : this->simulatableObjects)
         {
-            object->update(this->timestep);
+            object->previousState = object->currentState;
+            object->update(this->deltaTime);
             checkBounds(object);
         }
         this->accumulator -= deltaTime;
         this->simulationTime += deltaTime;
     }
+
+    const double interpolationFactor = this->accumulator / deltaTime;
+
     #ifdef DEBUG
     std::cout << "Simulationtime : " << this->simulationTime << std::endl;
+    std::cout << "Interpolation factor is : " << interpolationFactor << std::endl;
     #endif
 
+    return interpolationFactor;
 }
 
 void PhysicsEngine::checkBounds(std::unique_ptr<SimulatableObject> &object)
 {
-    if (object->y > this->simulationBounds.y_max || object->y <= this->simulationBounds.y_min)
+    if (object->currentState.y > this->simulationBounds.y_max || object->currentState.y <= this->simulationBounds.y_min)
     {
-        #ifdef DEBUG
-        std::cout << "Object is out of y bounds!!!" << std::endl;
-        #endif
-        object->vy = 0;
+        object->currentState.vy = 0;
     }
 
-    else if (object->x > this->simulationBounds.x_max || object->x <= this->simulationBounds.x_min)
+    else if (object->currentState.x > this->simulationBounds.x_max || object->currentState.x <= this->simulationBounds.x_min)
     {
-        #ifdef DEBUG
-        std::cout << "Object is out of x bounds!!!" << std::endl;
-        #endif
-        object->vx = 0;
+        object->currentState.vx = 0;
     }
 }
 
