@@ -80,8 +80,8 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<SimulatableObjec
         float interpolatedY = simulatableObject->previousState.y * (1.0f - interpolationFactor) + simulatableObject->currentState.y * interpolationFactor;
         spdlog::debug("Interpolated Position: x = {:.4f}, y = {:.4f}", interpolatedX, interpolatedY);
 
-        int cartesianX = interpolatedX;
-        int cartesianY = this->height - interpolatedY;
+        float cartesianX = interpolatedX;
+        float cartesianY = this->height - interpolatedY;
         spdlog::debug("Converted SDL Coordinates: x = {}, y = {}", cartesianX, cartesianY);
 
         SDL_Color randomColor = {
@@ -91,7 +91,7 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<SimulatableObjec
             255                                // Alpha channel set to 255 (fully opaque)
         };
         SDL_SetRenderDrawColor(renderer, randomColor.r, randomColor.g, randomColor.b, randomColor.a);
-        SDL_Rect rect = {cartesianX, cartesianY, PARTICLE_SIZE, PARTICLE_SIZE};
+        SDL_Rect rect = {static_cast<int>(cartesianX), static_cast<int>(cartesianY), PARTICLE_SIZE, PARTICLE_SIZE};
         SDL_RenderFillRect(renderer, &rect);
         spdlog::debug("Rendering object at ({}, {}), color ({}, {}, {}, {})", 
                       cartesianX, cartesianY, randomColor.r, randomColor.g, randomColor.b, randomColor.a);

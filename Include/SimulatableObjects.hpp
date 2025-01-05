@@ -6,17 +6,17 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#define PARTICLE_SIZE 10
+#define PARTICLE_SIZE 1
 
 class BasicState {
 public:
-    int x, y;
+    float  x, y;
     float vx, vy;
     float ax, ay;  
     float mass;
-    float gravity = -9.81f;
+    static constexpr float gravity = -9.81f;
 
-    BasicState(int x = 0, int y = 0, 
+    BasicState(float  x = 0, float  y = 0, 
           float vx = 0, float vy = 0, 
           float mass = 0)
         : x(x), y(y), vx(vx), vy(vy), mass(mass) {}
@@ -34,7 +34,7 @@ public:
 class Particle : public SimulatableObject
 {
 public:
-    Particle(int x, int y, float vx, float vy, float mass)
+    Particle(float  x, float  y, float vx, float vy, float mass)
     {
         this->currentState = BasicState(x, y, vx, vy, mass);
     }

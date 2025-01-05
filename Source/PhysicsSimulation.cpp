@@ -1,10 +1,10 @@
 #include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 500.0f
+#define SIMULATION_FPS 60.0f
 
 int main() 
 {
-    spdlog::set_level(spdlog::level::debug); // Set global log level to debug
+    spdlog::set_level(spdlog::level::err); // Set global log level to debug
     auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/debug_log.txt");
     spdlog::set_default_logger(file_logger);
 
@@ -22,14 +22,14 @@ int main()
     srand(static_cast<unsigned int>(time(0))); // Seed the random number generator
     
     // Add particles at random positions
-    for (int i = 0; i < 1; ++i) 
+    for (int i = 0; i < 1000; ++i) 
     {
         // Generate random positions within some range
-        double randomX = 500;   // Random X position (width of screen)
-        double randomY = 500;  // Random Y position (height of screen)
-        
+        double randomX = rand() % (renderer.width * 2);
+        int randomY = rand() % (700 - 500 + 1) + 500;
+
         spdlog::debug("Creating particle {} with random position: x = {}, y = {}", i + 1, randomX, randomY);
-        engine.addSimulatableObject(std::make_unique<Particle>(randomX, randomY, 0.0, 0.0, 0.0));
+        engine.addSimulatableObject(std::make_unique<Particle>(randomX, randomY, 0.0, 0, 0.0));
     }
 
     bool running = true;
