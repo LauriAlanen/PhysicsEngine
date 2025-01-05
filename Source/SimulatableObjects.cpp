@@ -1,26 +1,19 @@
 #include <SimulatableObjects.hpp>
 
-#define DEBUG
-
-Particle::Particle(int x, int y, float vx, float vy)
-{
-    this->x = x;
-    this->y = y;
-    this->vx = vx;
-    this->vy = vy;
-}
+// #define DEBUG
 
 Particle::~Particle()
 {
 
 }
 
+// TODO: Possibly try Verlet Intergration at some point?
 void Particle::update(float deltaTime)
 {
-    this->vy += this->gravity * deltaTime;
-    this->y += vy * deltaTime;
+    this->currentState.vy += this->currentState.gravity * deltaTime;
+    this->currentState.y += this->currentState.vy * deltaTime;
 
     #ifdef DEBUG
-    std::cout << "X, Y is : " << this->x << ", " << this->y << std::endl;
+    std::cout << "X, Y is : " << this->currentState.x << ", " << this->currentState.y << std::endl;
     #endif
 }
