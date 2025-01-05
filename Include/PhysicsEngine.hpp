@@ -16,16 +16,16 @@ struct Bounds {
 class PhysicsEngine
 {
 private:
-    Uint64 previousTime;
+    Uint64 currentTime;
     double accumulator, simulationTime;
     std::vector<std::unique_ptr<SimulatableObject>> simulatableObjects;
     Bounds simulationBounds;
 
 public:
-    double timestep;
+    double deltaTime;
     PhysicsEngine(float fps, Bounds simulationBounds);
     ~PhysicsEngine();
-    void update();
+    double update();
     void addSimulatableObject(std::unique_ptr<SimulatableObject> object);
     void checkBounds(std::unique_ptr<SimulatableObject> &object);
     std::vector<std::unique_ptr<SimulatableObject>>& getSimulatableObjects();
