@@ -1,7 +1,5 @@
 #include <PhysicsEngine.hpp>
 
-#define DEBUG
-
 PhysicsEngine::PhysicsEngine(float fps, Bounds simulationBounds)
 {
     this->deltaTime = (1.0f / fps);
@@ -33,7 +31,7 @@ double PhysicsEngine::update()
         for (auto& object : this->simulatableObjects) 
         {
             object->previousState = object->currentState;  // Ensure the previousState is the same as currentState
-            spdlog::debug("First iteration: Synchronizing previousState with currentState for object. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})",
+            spdlog::trace("First iteration: Synchronizing previousState with currentState for object. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})",
                           object->currentState.x, object->currentState.y, 
                           object->currentState.vx, object->currentState.vy);
         }
@@ -47,18 +45,18 @@ double PhysicsEngine::update()
             object->previousState = object->currentState;
             object->update(this->deltaTime);
             checkBounds(object);
-            spdlog::debug("Object updated. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})", 
+            spdlog::trace("Object updated. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})", 
                           object->currentState.x, object->currentState.y, 
                           object->currentState.vx, object->currentState.vy);
         }
         this->accumulator -= deltaTime;
         this->simulationTime += deltaTime;
-        spdlog::debug("Updated object states. Accumulator: {:.4f}, Simulation time: {:.4f}", this->accumulator, this->simulationTime);
+        spdlog::trace("Updated object states. Accumulator: {:.4f}, Simulation time: {:.4f}", this->accumulator, this->simulationTime);
     }
 
     const double interpolationFactor = this->accumulator / deltaTime;
-    spdlog::debug("Interpolation factor: {:.4f}", interpolationFactor);
-    spdlog::debug("Simulation time: {}", this->simulationTime);
+    spdlog::trace("Interpolation factor: {:.4f}", interpolationFactor);
+    spdlog::trace("Simulation time: {}", this->simulationTime);
 
     return interpolationFactor;
 }
@@ -67,35 +65,37 @@ void PhysicsEngine::checkBounds(std::unique_ptr<SimulatableObject> &object)
 {
     bool positionChanged = false;
     
-    if (object->currentState.y > this->simulationBounds.y_max || object->currentState.y <= this->simulationBounds.y_min)
+    if (object->currentState.y >= this->simulationBounds.y_max - WINDOW_BORDER_BUFFER || object->currentState.y <= this->simulationBounds.y_min + WINDOW_BORDER_BUFFER)
     {
         object->currentState.vy = 0;
+        object->currentState.ay = 0;
         positionChanged = true;
-        spdlog::debug("Object out of bounds (Y-axis). Velocity set to 0.");
+        spdlog::trace("Object out of bounds (Y-axis). Velocity set to 0.");
     }
 
-    if (object->currentState.x > this->simulationBounds.x_max || object->currentState.x <= this->simulationBounds.x_min)
+    if (object->currentState.x >= this->simulationBounds.x_max - WINDOW_BORDER_BUFFER || object->currentState.x <= this->simulationBounds.x_min + WINDOW_BORDER_BUFFER)
     {
         object->currentState.vx = 0;
+        object->currentState.ax = 0;
         positionChanged = true;
-        spdlog::debug("Object out of bounds (X-axis). Velocity set to 0.");
+        spdlog::trace("Object out of bounds (X-axis). Velocity set to 0.");
     }
 
     if (positionChanged)
     {
-        spdlog::debug("Object position and velocity updated after bounds check.");
+        spdlog::trace("Object position and velocity updated after bounds check.");
     }
 }
 
 void PhysicsEngine::addSimulatableObject(std::unique_ptr<SimulatableObject> object)
 {
     this->simulatableObjects.push_back(std::move(object));
-    spdlog::debug("Simulatable object added. Total objects: {}", this->simulatableObjects.size());
+    spdlog::trace("Simulatable object added. Total objects: {}", this->simulatableObjects.size());
 
 }
 
 std::vector<std::unique_ptr<SimulatableObject>>& PhysicsEngine::getSimulatableObjects()
 {
-    spdlog::debug("Returning simulatable objects. Total objects: {}", this->simulatableObjects.size());
+    spdlog::trace("Returning simulatable objects. Total objects: {}", this->simulatableObjects.size());
     return this->simulatableObjects;
 }
