@@ -9,6 +9,8 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+#define WINDOW_BORDER_BUFFER 100
+
 struct Bounds {
     int x_min;  
     int y_min;  
