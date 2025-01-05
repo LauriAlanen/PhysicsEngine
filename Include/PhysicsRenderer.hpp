@@ -24,5 +24,5 @@ class PhysicsRenderer
         void drawRectangle(int x, int y, int w, int h, SDL_Color color);
         void clearScreen(SDL_Color color);
         void present();
-        void renderObjects(std::vector<std::unique_ptr<SimulatableObject>> &simulatableObjects);
+        void renderObjects(std::vector<std::unique_ptr<SimulatableObject>> &simulatableObjects, double interpolationFactor);
 };
