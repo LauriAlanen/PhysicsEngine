@@ -7,13 +7,14 @@ Particle::~Particle()
 
 }
 
-// TODO: Possibly try Verlet Intergration at some point?
 void Particle::update(float deltaTime)
 {
-    this->currentState.vy += this->currentState.gravity * deltaTime;
-    this->currentState.y += this->currentState.vy * deltaTime;
+    spdlog::debug("Updating particle: currentState.y = {}, currentState.vy = {:.4f}, gravity = {:.4f}, deltaTime = {:.4f}",
+                  this->currentState.y, this->currentState.vy, this->currentState.gravity, deltaTime);
 
-    #ifdef DEBUG
-    std::cout << "X, Y is : " << this->currentState.x << ", " << this->currentState.y << std::endl;
-    #endif
+    this->currentState.vy += this->currentState.gravity * deltaTime;
+    spdlog::debug("Updated vy = {}", this->currentState.vy);
+
+    this->currentState.y += this->currentState.vy * deltaTime;
+    spdlog::debug("Updated y = {}", this->currentState.y);
 }
