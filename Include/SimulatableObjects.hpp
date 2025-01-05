@@ -3,7 +3,10 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
-#define PARTICLE_SIZE 2
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
+#define PARTICLE_SIZE 10
 
 class BasicState {
 public:
@@ -15,7 +18,7 @@ public:
 
     BasicState(int x = 0, int y = 0, 
           float vx = 0, float vy = 0, 
-          float mass = 1.0f)
+          float mass = 0)
         : x(x), y(y), vx(vx), vy(vy), mass(mass) {}
 };
 

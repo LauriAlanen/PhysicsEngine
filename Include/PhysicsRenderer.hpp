@@ -6,6 +6,9 @@
 #include <memory>
 #include <SimulatableObjects.hpp>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 #define WINDOW_SIZE_W 1800
 #define WINDOW_SIZE_H 900
 

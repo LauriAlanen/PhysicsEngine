@@ -6,6 +6,9 @@
 #include <SDL2/SDL.h>
 #include <SimulatableObjects.hpp>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 struct Bounds {
     int x_min;  
     int y_min;  
@@ -16,13 +19,13 @@ struct Bounds {
 class PhysicsEngine
 {
 private:
-    Uint64 currentTime;
+    Uint64 previousTime, newTime;
     double accumulator, simulationTime;
     std::vector<std::unique_ptr<SimulatableObject>> simulatableObjects;
     Bounds simulationBounds;
+    double deltaTime;
 
 public:
-    double deltaTime;
     PhysicsEngine(float fps, Bounds simulationBounds);
     ~PhysicsEngine();
     double update();
