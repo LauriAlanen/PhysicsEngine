@@ -28,4 +28,6 @@ class PhysicsRenderer
         void clearScreen(SDL_Color color);
         void present();
         void renderObjects(std::vector<std::unique_ptr<PhysicsObject>> &physicsObjects, double interpolationFactor);
+        void drawArrow(SDL_Renderer* renderer, int x, int y, int dx, int dy, int arrowHeadLength, int arrowHeadAngle);
+        void renderForceVectors(SDL_Renderer* renderer, const std::unique_ptr<PhysicsObject>& physicsObject, int x, int y);
 };
