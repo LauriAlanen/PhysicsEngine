@@ -16,7 +16,6 @@ Source/PhysicsEngine.cpp
 Source/PhysicsRenderer.cpp
 Source/PhysicsSimulation.cpp
 Source/PhysicsObjects.cpp
-Source/SimulationObjects.cpp
 )
 
 # Add header files (optional but good practice for IDE support)
@@ -25,7 +24,6 @@ Include/PhysicsEngine.hpp
 Include/PhysicsRenderer.hpp
 Include/PhysicsSimulation.hpp
 Include/PhysicsObjects.hpp
-Include/SimulationObjects.hpp
 )
 
 # Add the executable
