@@ -11,6 +11,7 @@
 
 #define WINDOW_SIZE_W 1800
 #define WINDOW_SIZE_H 900
+#define MAGNITUDE_ARROW_THRESHOLD 5
 
 class PhysicsRenderer 
 {

@@ -111,15 +111,15 @@ void PhysicsRenderer::renderForceVectors(SDL_Renderer* renderer, const std::uniq
     int arrowHeadLength = 10;
     int arrowHeadAngle = 30;
 
-    if (physicsObject->magnitudes.up > 0) 
+    if (physicsObject->magnitudes.up > MAGNITUDE_ARROW_THRESHOLD) 
         drawArrow(renderer, x, y, 0, physicsObject->magnitudes.up, arrowHeadLength, arrowHeadAngle); // Up
 
-    if (physicsObject->magnitudes.down > 0) 
+    if (physicsObject->magnitudes.down > MAGNITUDE_ARROW_THRESHOLD) 
         drawArrow(renderer, x, y, 0, -physicsObject->magnitudes.down, arrowHeadLength, arrowHeadAngle);  // Down
 
-    if (physicsObject->magnitudes.right > 0) 
+    if (physicsObject->magnitudes.right > MAGNITUDE_ARROW_THRESHOLD) 
         drawArrow(renderer, x, y, physicsObject->magnitudes.right, 0, arrowHeadLength, arrowHeadAngle);  // Right
 
-    if (physicsObject->magnitudes.left > 0) 
+    if (physicsObject->magnitudes.left > MAGNITUDE_ARROW_THRESHOLD) 
         drawArrow(renderer, x, y, -physicsObject->magnitudes.left, 0, arrowHeadLength, arrowHeadAngle); // Left
 }
