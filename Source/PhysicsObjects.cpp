@@ -14,8 +14,8 @@ void Particle::update(float deltaTime)
     currentState.Fy = currentState.mass * (currentState.gravity + currentState.ay);
 
     // Update velocities based on acceleration
-    currentState.vx += currentState.ax * deltaTime;
-    currentState.vy += currentState.ay * deltaTime;
+    currentState.vx += (currentState.Fx / currentState.mass) * deltaTime;
+    currentState.vy += (currentState.Fy / currentState.mass) * deltaTime;
 
     // Update positions based on velocities
     currentState.x += currentState.vx * deltaTime;
@@ -27,7 +27,7 @@ void Particle::update(float deltaTime)
     magnitudes.down = (currentState.vy > 0) ? std::abs(currentState.vy) : 0;
     magnitudes.up = (currentState.vy < 0) ? std::abs(currentState.vy) : 0;
 
-    spdlog::trace("Updating particle: x = {:.4f}, y = {:.4f}, vx = {:.4f}, vy = {:.4f}, ax = {:.4f}, ay = {:.4f}, mass = {:.4f}, gravity = {:.4f}, deltaTime = {:.4f}",
+    spdlog::debug("Updating particle: x = {:.4f}, y = {:.4f}, vx = {:.4f}, vy = {:.4f}, ax = {:.4f}, ay = {:.4f}, mass = {:.4f}, gravity = {:.4f}, deltaTime = {:.4f}",
                   currentState.x, currentState.y, currentState.vx, currentState.vy, 
                   currentState.ax, currentState.ay, currentState.mass, BasicState::gravity, deltaTime);
 }
@@ -42,7 +42,7 @@ void Particle::applyDrag()
         currentState.drag.yFdrag = 0.5 * currentState.drag.dragCoefficient * currentState.drag.airDensity * currentState.area * currentState.vy * currentState.vy;
 
         // Apply drag force (drag always opposes velocity, so it's subtracted from acceleration)
-        currentState.ax -= currentState.drag.xFdrag / currentState.mass;
-        currentState.ay -= currentState.drag.yFdrag / currentState.mass;
+        currentState.ax -= copysign(currentState.drag.xFdrag, -currentState.vx) / currentState.mass;
+        currentState.ay -= copysign(currentState.drag.yFdrag, -currentState.vy) / currentState.mass;
     }
 }
