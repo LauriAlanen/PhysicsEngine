@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SDL2/SDL.h>
 #include <iostream>
 
 #include <spdlog/spdlog.h>
@@ -23,15 +22,15 @@ public:
 };
 
 
-class SimulatableObject
+class PhysicsObject
 {
 public:
-    virtual ~SimulatableObject() = default;
+    virtual ~PhysicsObject() = default;
     virtual void update(float deltaTime) = 0;
     BasicState currentState, previousState;
 };
 
-class Particle : public SimulatableObject
+class Particle : public PhysicsObject
 {
 public:
     Particle(BasicState currentState)

@@ -30,7 +30,7 @@ int main()
     particleState.ax = 11.5;
     particleState.ay = 50;
     particleState.mass = 200;
-    engine.addSimulatableObject(std::make_unique<Particle>(particleState));
+    engine.addPhysicsObject(std::make_unique<Particle>(particleState));
 
     bool running = true;
     SDL_Event event;
@@ -47,7 +47,7 @@ int main()
         double interpolationFactor = engine.update(); // Update physics and return the interpolationFactor
         
         spdlog::trace("Rendering objects...");
-        renderer.renderObjects(engine.getSimulatableObjects(), interpolationFactor); // Now update the render with new positions using interpolationFactor
+        renderer.renderObjects(engine.getPhysicsObjects(), interpolationFactor); // Now update the render with new positions using interpolationFactor
         renderer.present();   
     }
 

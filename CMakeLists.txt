@@ -15,7 +15,8 @@ set(SRCS
 Source/PhysicsEngine.cpp
 Source/PhysicsRenderer.cpp
 Source/PhysicsSimulation.cpp
-Source/SimulatableObjects.cpp
+Source/PhysicsObjects.cpp
+Source/SimulationObjects.cpp
 )
 
 # Add header files (optional but good practice for IDE support)
@@ -23,7 +24,8 @@ set(HDRS
 Include/PhysicsEngine.hpp
 Include/PhysicsRenderer.hpp
 Include/PhysicsSimulation.hpp
-Include/SimulatableObjects.hpp
+Include/PhysicsObjects.hpp
+Include/SimulationObjects.hpp
 )
 
 # Add the executable

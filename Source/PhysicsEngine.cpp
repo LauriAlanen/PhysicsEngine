@@ -28,7 +28,7 @@ double PhysicsEngine::update()
 
     if (this->simulationTime == 0.0) // Handle edge case so on first iteration previous and current states are the same so interpolation does work correctly
     {
-        for (auto& object : this->simulatableObjects) 
+        for (auto& object : this->physicsObjects) 
         {
             object->previousState = object->currentState;  // Ensure the previousState is the same as currentState
             spdlog::trace("First iteration: Synchronizing previousState with currentState for object. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})",
@@ -40,7 +40,7 @@ double PhysicsEngine::update()
     while (this->accumulator >= this->deltaTime)
     {
         // Integrate
-        for (auto& object : this->simulatableObjects) 
+        for (auto& object : this->physicsObjects) 
         {
             object->previousState = object->currentState;
             object->update(this->deltaTime);
@@ -61,7 +61,7 @@ double PhysicsEngine::update()
     return interpolationFactor;
 }
 
-void PhysicsEngine::checkBounds(std::unique_ptr<SimulatableObject> &object)
+void PhysicsEngine::checkBounds(std::unique_ptr<PhysicsObject> &object)
 {
     bool positionChanged = false;
     
@@ -87,15 +87,15 @@ void PhysicsEngine::checkBounds(std::unique_ptr<SimulatableObject> &object)
     }
 }
 
-void PhysicsEngine::addSimulatableObject(std::unique_ptr<SimulatableObject> object)
+void PhysicsEngine::addPhysicsObject(std::unique_ptr<PhysicsObject> object)
 {
-    this->simulatableObjects.push_back(std::move(object));
-    spdlog::trace("Simulatable object added. Total objects: {}", this->simulatableObjects.size());
+    this->physicsObjects.push_back(std::move(object));
+    spdlog::trace("Simulatable object added. Total objects: {}", this->physicsObjects.size());
 
 }
 
-std::vector<std::unique_ptr<SimulatableObject>>& PhysicsEngine::getSimulatableObjects()
+std::vector<std::unique_ptr<PhysicsObject>>& PhysicsEngine::getPhysicsObjects()
 {
-    spdlog::trace("Returning simulatable objects. Total objects: {}", this->simulatableObjects.size());
-    return this->simulatableObjects;
+    spdlog::trace("Returning simulatable objects. Total objects: {}", this->physicsObjects.size());
+    return this->physicsObjects;
 }

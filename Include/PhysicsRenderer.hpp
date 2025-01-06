@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
-#include <SimulatableObjects.hpp>
+#include <PhysicsObjects.hpp>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -27,5 +27,5 @@ class PhysicsRenderer
         void drawRectangle(int x, int y, int w, int h, SDL_Color color);
         void clearScreen(SDL_Color color);
         void present();
-        void renderObjects(std::vector<std::unique_ptr<SimulatableObject>> &simulatableObjects, double interpolationFactor);
+        void renderObjects(std::vector<std::unique_ptr<PhysicsObject>> &physicsObjects, double interpolationFactor);
 };

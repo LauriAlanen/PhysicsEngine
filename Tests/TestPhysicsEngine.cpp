@@ -3,7 +3,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch_test_macros.hpp>
 #include <PhysicsEngine.hpp>
-#include <SimulatableObjects.hpp>
+#include <PhysicsObjects.hpp>
 
 TEST_CASE("Test Frame Time Clamping") {
     Bounds simulationBounds(0, 0, 0, 0);

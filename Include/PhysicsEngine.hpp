@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <SDL2/SDL.h>
-#include <SimulatableObjects.hpp>
+#include <PhysicsObjects.hpp>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -23,7 +23,7 @@ class PhysicsEngine
 private:
     Uint64 previousTime, newTime;
     double accumulator, simulationTime;
-    std::vector<std::unique_ptr<SimulatableObject>> simulatableObjects;
+    std::vector<std::unique_ptr<PhysicsObject>> physicsObjects;
     Bounds simulationBounds;
     double deltaTime;
 
@@ -31,9 +31,9 @@ public:
     PhysicsEngine(float fps, Bounds simulationBounds);
     ~PhysicsEngine();
     double update();
-    void addSimulatableObject(std::unique_ptr<SimulatableObject> object);
-    void checkBounds(std::unique_ptr<SimulatableObject> &object);
-    std::vector<std::unique_ptr<SimulatableObject>>& getSimulatableObjects();
+    void addPhysicsObject(std::unique_ptr<PhysicsObject> object);
+    void checkBounds(std::unique_ptr<PhysicsObject> &object);
+    std::vector<std::unique_ptr<PhysicsObject>>& getPhysicsObjects();
 
 };
 
