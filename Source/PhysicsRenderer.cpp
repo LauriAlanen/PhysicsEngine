@@ -67,6 +67,8 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_RenderFillRect(renderer, &rect);
 
+        renderForceVectors(renderer, physicsObject, cartesianX + (rect.w / 2), cartesianY + (rect.h / 2));
+
         spdlog::trace("Interpolation Factor: {:.4f}", interpolationFactor);
         spdlog::trace("Interpolated Position: x = {:.4f}, y = {:.4f}", interpolatedX, interpolatedY);
         spdlog::trace("Converted SDL Coordinates: x = {}, y = {}", cartesianX, cartesianY);
@@ -81,4 +83,43 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
         spdlog::trace("Rendering object at ({}, {}), color ({}, {}, {}, {})", 
                       cartesianX, cartesianY, color.r, color.g, color.b, color.a);
     }
+}
+
+void PhysicsRenderer::drawArrow(SDL_Renderer* renderer, int x, int y, int dx, int dy, int arrowHeadLength, int arrowHeadAngle) {
+    int x2 = x + dx;
+    int y2 = y + dy;
+    SDL_RenderDrawLine(renderer, x, y, x2, y2);
+
+    double angle = atan2(dy, dx);
+    double leftAngle = angle + M_PI / 180 * arrowHeadAngle;
+    double rightAngle = angle - M_PI / 180 * arrowHeadAngle;
+
+    int x3 = x2 - arrowHeadLength * cos(leftAngle);
+    int y3 = y2 - arrowHeadLength * sin(leftAngle);
+
+    int x4 = x2 - arrowHeadLength * cos(rightAngle);
+    int y4 = y2 - arrowHeadLength * sin(rightAngle);
+
+    SDL_RenderDrawLine(renderer, x2, y2, x3, y3);
+    SDL_RenderDrawLine(renderer, x2, y2, x4, y4);
+}
+
+void PhysicsRenderer::renderForceVectors(SDL_Renderer* renderer, const std::unique_ptr<PhysicsObject>& physicsObject, int x, int y) {
+    SDL_Color color = {0, 255, 0, 255}; // Green for force vectors
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    int arrowHeadLength = 10;
+    int arrowHeadAngle = 30;
+
+    if (physicsObject->magnitudes.up > 0) 
+        drawArrow(renderer, x, y, 0, physicsObject->magnitudes.up, arrowHeadLength, arrowHeadAngle); // Up
+
+    if (physicsObject->magnitudes.down > 0) 
+        drawArrow(renderer, x, y, 0, -physicsObject->magnitudes.down, arrowHeadLength, arrowHeadAngle);  // Down
+
+    if (physicsObject->magnitudes.right > 0) 
+        drawArrow(renderer, x, y, physicsObject->magnitudes.right, 0, arrowHeadLength, arrowHeadAngle);  // Right
+
+    if (physicsObject->magnitudes.left > 0) 
+        drawArrow(renderer, x, y, -physicsObject->magnitudes.left, 0, arrowHeadLength, arrowHeadAngle); // Left
 }
