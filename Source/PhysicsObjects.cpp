@@ -7,29 +7,42 @@ Particle::~Particle()
 
 void Particle::update(float deltaTime)
 {
-    this->currentState.Fx = this->currentState.mass * this->currentState.ax;
-    this->currentState.Fy = this->currentState.mass * (this->currentState.gravity + this->currentState.ay);
+    applyDrag(); // Apply drag before calculating forces
 
-    spdlog::debug("Fx : {:.4f} and Fy : {:.4f}, ax : {:.4f} and ay : {:.4f}, vx : {:.4f} and vy : {:.4f}", 
-    this->currentState.Fx, this->currentState.Fy, this->currentState.ax, this->currentState.ay, this->currentState.vx, this->currentState.vy);
+    // Calculate forces (including the drag forces)
+    currentState.Fx = currentState.mass * currentState.ax;
+    currentState.Fy = currentState.mass * (currentState.gravity + currentState.ay);
 
-    this->currentState.vy += this->currentState.Fy / this->currentState.mass * deltaTime;
-    this->currentState.y += this->currentState.vy * deltaTime;
+    // Update velocities based on acceleration
+    currentState.vx += currentState.ax * deltaTime;
+    currentState.vy += currentState.ay * deltaTime;
 
-    this->currentState.vx += this->currentState.ax * deltaTime;
-    this->currentState.x += this->currentState.vx * deltaTime;
+    // Update positions based on velocities
+    currentState.x += currentState.vx * deltaTime;
+    currentState.y += currentState.vy * deltaTime;
 
-    if (this->currentState.vx > 0)
-        this->magnitudes.right = std::abs(currentState.vx);
-    else
-        this->magnitudes.left = std::abs(currentState.vx);
-
-    if (this->currentState.vy > 0)
-        this->magnitudes.down = std::abs(currentState.vy);
-    else
-        this->magnitudes.up = std::abs(currentState.vy);
+    // Update directional magnitudes
+    magnitudes.right = (currentState.vx > 0) ? std::abs(currentState.vx) : 0;
+    magnitudes.left = (currentState.vx < 0) ? std::abs(currentState.vx) : 0;
+    magnitudes.down = (currentState.vy > 0) ? std::abs(currentState.vy) : 0;
+    magnitudes.up = (currentState.vy < 0) ? std::abs(currentState.vy) : 0;
 
     spdlog::trace("Updating particle: x = {:.4f}, y = {:.4f}, vx = {:.4f}, vy = {:.4f}, ax = {:.4f}, ay = {:.4f}, mass = {:.4f}, gravity = {:.4f}, deltaTime = {:.4f}",
-                this->currentState.x, this->currentState.y, this->currentState.vx, this->currentState.vy, this->currentState.ax, this->currentState.ay, 
-                this->currentState.mass, BasicState::gravity, deltaTime);
+                  currentState.x, currentState.y, currentState.vx, currentState.vy, 
+                  currentState.ax, currentState.ay, currentState.mass, BasicState::gravity, deltaTime);
+}
+
+void Particle::applyDrag()
+{
+    float velocityVector = sqrt(currentState.vx * currentState.vx + currentState.vy * currentState.vy);
+    if (velocityVector > 0) 
+    {
+        // Calculate drag force components based on velocity, not position
+        currentState.drag.xFdrag = 0.5 * currentState.drag.dragCoefficient * currentState.drag.airDensity * currentState.area * currentState.vx * currentState.vx;
+        currentState.drag.yFdrag = 0.5 * currentState.drag.dragCoefficient * currentState.drag.airDensity * currentState.area * currentState.vy * currentState.vy;
+
+        // Apply drag force (drag always opposes velocity, so it's subtracted from acceleration)
+        currentState.ax -= currentState.drag.xFdrag / currentState.mass;
+        currentState.ay -= currentState.drag.yFdrag / currentState.mass;
+    }
 }

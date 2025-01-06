@@ -5,8 +5,8 @@
 int main() 
 {
     spdlog::set_level(spdlog::level::debug); // Set global log level to debug
-    auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/debug_log.txt");
-    spdlog::set_default_logger(file_logger);
+    // auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/debug_log.txt");
+    // spdlog::set_default_logger(file_logger);
 
     spdlog::trace("Initializing Physics Renderer...");
     PhysicsRenderer renderer("Physics Renderer");
@@ -23,14 +23,20 @@ int main()
     
     // Add particles at random positions
     BasicState particleState;
-    particleState.x = 500;
-    particleState.y = 110;
-    particleState.vy = 50;
-    particleState.vx = 100;
-    particleState.ax = 11.5;
-    particleState.ay = 50;
-    particleState.mass = 200;
+    particleState.x = renderer.width / 2;
+    particleState.y = renderer.height - 200;
+    particleState.vy = 0;
+    particleState.vx = 0;
+    particleState.ax = 0;
+    particleState.ay = 0;
+    particleState.mass = 70;
+    particleState.area = 0.7;
     engine.addPhysicsObject(std::make_unique<Particle>(particleState));
+
+    particleState.x = 500;
+    particleState.y = renderer.height - 200;
+    particleState.mass = 500;
+    // engine.addPhysicsObject(std::make_unique<Particle>(particleState));
 
     bool running = true;
     SDL_Event event;
