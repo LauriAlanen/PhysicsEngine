@@ -32,8 +32,8 @@ double PhysicsEngine::update()
         {
             object->previousState = object->currentState;  // Ensure the previousState is the same as currentState
             spdlog::trace("First iteration: Synchronizing previousState with currentState for object. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})",
-                          object->currentState.x, object->currentState.y, 
-                          object->currentState.vx, object->currentState.vy);
+                          object->currentState.position.x, object->currentState.position.y, 
+                          object->currentState.velocity.x, object->currentState.velocity.y);
         }
     }
 
@@ -46,8 +46,8 @@ double PhysicsEngine::update()
             object->update(this->deltaTime);
             checkBounds(object);
             spdlog::trace("Object updated. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})", 
-                          object->currentState.x, object->currentState.y, 
-                          object->currentState.vx, object->currentState.vy);
+                          object->currentState.position.x, object->currentState.position.y, 
+                          object->currentState.velocity.x, object->currentState.velocity.y);
         }
         this->accumulator -= deltaTime;
         this->simulationTime += deltaTime;
@@ -65,18 +65,18 @@ void PhysicsEngine::checkBounds(std::unique_ptr<PhysicsObject> &object)
 {
     bool positionChanged = false;
     
-    if (object->currentState.y >= this->simulationBounds.y_max - WINDOW_BORDER_BUFFER || object->currentState.y <= this->simulationBounds.y_min + WINDOW_BORDER_BUFFER)
+    if (object->currentState.position.y >= this->simulationBounds.y_max - WINDOW_BORDER_BUFFER || object->currentState.position.y <= this->simulationBounds.y_min + WINDOW_BORDER_BUFFER)
     {
-        object->currentState.vy = 0;
-        object->currentState.ay = 0;
+        object->currentState.velocity.y = 0;
+        object->currentState.acceleration.y = 0;
         positionChanged = true;
         spdlog::trace("Object out of bounds (Y-axis). Velocity set to 0.");
     }
 
-    if (object->currentState.x >= this->simulationBounds.x_max - WINDOW_BORDER_BUFFER || object->currentState.x <= this->simulationBounds.x_min + WINDOW_BORDER_BUFFER)
+    if (object->currentState.position.x >= this->simulationBounds.x_max - WINDOW_BORDER_BUFFER || object->currentState.position.x <= this->simulationBounds.x_min + WINDOW_BORDER_BUFFER)
     {
-        object->currentState.vx = 0;
-        object->currentState.ax = 0;
+        object->currentState.velocity.x = 0;
+        object->currentState.acceleration.x = 0;
         positionChanged = true;
         spdlog::trace("Object out of bounds (X-axis). Velocity set to 0.");
     }

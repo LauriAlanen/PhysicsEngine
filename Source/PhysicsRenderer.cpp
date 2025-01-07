@@ -56,8 +56,8 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
 
     for (const auto &physicsObject : physicsObjects)
     {
-        float interpolatedX = physicsObject->previousState.x * (1.0f - interpolationFactor) + physicsObject->currentState.x * interpolationFactor;
-        float interpolatedY = physicsObject->previousState.y * (1.0f - interpolationFactor) + physicsObject->currentState.y * interpolationFactor;
+        float interpolatedX = physicsObject->previousState.position.x * (1.0f - interpolationFactor) + physicsObject->currentState.position.x * interpolationFactor;
+        float interpolatedY = physicsObject->previousState.position.y * (1.0f - interpolationFactor) + physicsObject->currentState.position.y * interpolationFactor;
 
         float cartesianX = interpolatedX;
         float cartesianY = this->height - interpolatedY;
@@ -73,13 +73,13 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
         spdlog::trace("Interpolated Position: x = {:.4f}, y = {:.4f}", interpolatedX, interpolatedY);
         spdlog::trace("Converted SDL Coordinates: x = {}, y = {}", cartesianX, cartesianY);
         spdlog::trace("Previous State: x = {}, y = {}, vy = {:.4f}", 
-                        physicsObject->previousState.x, 
-                        physicsObject->previousState.y, 
-                        physicsObject->previousState.vy);
+                        physicsObject->previousState.position.x, 
+                        physicsObject->previousState.position.y, 
+                        physicsObject->previousState.velocity.y);
         spdlog::trace("Current State: x = {}, y = {}, vy = {:.4f}", 
-                        physicsObject->currentState.x, 
-                        physicsObject->currentState.y, 
-                        physicsObject->currentState.vy);
+                        physicsObject->currentState.position.x, 
+                        physicsObject->currentState.position.y, 
+                        physicsObject->currentState.velocity.y);
         spdlog::trace("Rendering object at ({}, {}), color ({}, {}, {}, {})", 
                       cartesianX, cartesianY, color.r, color.g, color.b, color.a);
     }
