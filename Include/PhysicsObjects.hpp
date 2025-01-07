@@ -6,6 +6,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #define PARTICLE_SIZE 20
+#define SCALING_FACTOR 1.0f
 
 struct VectorMagnitudes
 {
@@ -65,7 +66,6 @@ struct BasicState
     Vector2D acceleration;
     Vector2D totalForce;  
     float mass;
-    float area;
     static constexpr float gravity = -9.81f;
     struct Drag {
         float dragCoefficient;
@@ -91,8 +91,6 @@ public:
     Particle(BasicState currentState)
     {
         this->currentState = currentState;
-        this->currentState.drag.airDensity = 1.225;
-        this->currentState.drag.dragCoefficient = 1;
     }
 
     ~Particle();

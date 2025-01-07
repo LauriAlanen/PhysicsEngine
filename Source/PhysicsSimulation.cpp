@@ -23,15 +23,30 @@ int main()
     
     // Add particles at random positions
     BasicState particleState;
-    particleState.position.x = renderer.width / 2;
+    particleState.position.x = 800;
     particleState.position.y = renderer.height - 200;
-    particleState.velocity.y = 0;
-    particleState.velocity.x = 0;
-    particleState.acceleration.x = 10;
+    particleState.velocity.y = 10;
+    particleState.velocity.x = 5;
+    particleState.acceleration.x = 0;
     particleState.acceleration.y = 0;
+    particleState.drag.airDensity = 1.225;
+    particleState.drag.dragCoefficient = 0.47;
+    particleState.drag.area = 1;
     particleState.mass = 70;
-    particleState.area = 0.7;
     engine.addPhysicsObject(std::make_unique<Particle>(particleState));
+
+    // particleState.position.x = 100;
+    // particleState.position.y = 200;
+    // particleState.velocity.y = 50;
+    // particleState.velocity.x = 50;
+    // particleState.acceleration.x = 10;
+    // particleState.acceleration.y = 10;
+    // particleState.drag.airDensity = 1.225;
+    // particleState.drag.dragCoefficient = 3;
+    // particleState.drag.area = 10;
+    // particleState.mass = 70;
+    // engine.addPhysicsObject(std::make_unique<Particle>(particleState));
+
 
     bool running = true;
     SDL_Event event;
