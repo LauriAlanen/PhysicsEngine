@@ -33,10 +33,12 @@ void Particle::update(float deltaTime)
 void Particle::applyDrag()
 {
     float velocityMagnitude = currentState.velocity.magnitude();
+    spdlog::debug("Velocity Vector : {:.4f}", velocityMagnitude);
+
     if (velocityMagnitude > 0) {
         float dragFactor = 0.5 * currentState.drag.dragCoefficient * currentState.drag.airDensity * currentState.drag.area;
         Vector2D dragForce = currentState.velocity.normalize() * (-dragFactor * velocityMagnitude * velocityMagnitude);
-        spdlog::debug("Applied dragForce {:.4f}, {:.4f}", dragForce.x, dragForce.y);
+        spdlog::debug("Applied dragForce {:.4f}, {:.4f} and unit vector is ({}, {})", dragForce.x, dragForce.y, currentState.velocity.normalize().x, currentState.velocity.normalize().y);
         applyForce(dragForce);
     }
 }
