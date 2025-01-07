@@ -17,7 +17,8 @@ struct VectorMagnitudes
 };
 
 struct Vector2D {
-    float x, y;
+    float x = 0.0f;
+    float y = 0.0f;
 
     Vector2D(float x = 0, float y = 0) : x(x), y(y) {}
 
@@ -65,12 +66,12 @@ struct BasicState
     Vector2D velocity;
     Vector2D acceleration;
     Vector2D totalForce;  
-    float mass;
+    float mass = 1.0f;
     static constexpr float gravity = -9.81f;
     struct Drag {
-        float dragCoefficient;
-        float airDensity;
-        float area;
+        float dragCoefficient = 0.47f;
+        float airDensity = 1.225f;
+        float area = 1.0f;
     } drag;
 };
 
