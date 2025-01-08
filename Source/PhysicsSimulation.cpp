@@ -1,10 +1,10 @@
 #include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 500.0f
+#define SIMULATION_FPS 300.0f
 
 int main() 
 {
-    spdlog::set_level(spdlog::level::debug); // Set global log level to debug
+    spdlog::set_level(spdlog::level::info); // Set global log level to debug
     // auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/debug_log.txt");
     // spdlog::set_default_logger(file_logger);
 
@@ -21,40 +21,44 @@ int main()
 
     srand(static_cast<unsigned int>(time(0))); // Seed the random number generator
     
-    BasicState particleState;
-    particleState.position.x = 800;
-    particleState.position.y = 200;
-    particleState.velocity.y = 0;
-    particleState.velocity.x = 0;
-    particleState.acceleration.x = 0;
-    particleState.acceleration.x = 0;
-    particleState.acceleration.y = 0;
-    particleState.drag.airDensity = 1.225;
-    particleState.drag.dragCoefficient = 0.47;
-    particleState.drag.area = 1;
-    particleState.mass = 70;
-    engine.addPhysicsObject(std::make_unique<Particle>(particleState));
+    for (int i = 0; i < 100; ++i) {
+        BasicState particle;
 
-    particleState.position.x = 400;
-    particleState.position.y = 200;
-    particleState.velocity.y = 50;
-    particleState.velocity.x = 100;
-    particleState.acceleration.x = 0;
-    particleState.acceleration.y = 0;
-    particleState.drag.airDensity = 1.225;
-    particleState.drag.dragCoefficient = 0.47;
-    particleState.drag.area = 1;
-    particleState.mass = 100;
-    // engine.addPhysicsObject(std::make_unique<Particle>(particleState));
+        // Randomize position (within bounds)
+        particle.position.x = rand() % renderer.width; // Random x between 0 and renderer width
+        particle.position.y = rand() % renderer.height; // Random y between 0 and renderer height
 
+        // Randomize velocity
+        particle.velocity.x = (rand() % 200 - 100) / 10.0f; // Random velocity x between -10.0 and 10.0
+        particle.velocity.y = (rand() % 200 - 100) / 10.0f; // Random velocity y between -10.0 and 10.0
+
+        // Randomize acceleration
+        particle.acceleration.x = (rand() % 100 - 50) / 10.0f; // Random acceleration x between -5.0 and 5.0
+        particle.acceleration.y = (rand() % 100 - 50) / 10.0f; // Random acceleration y between -5.0 and 5.0
+
+        // Drag properties (constant or slightly varied)
+        particle.drag.airDensity = 1.225; // Standard air density
+        particle.drag.dragCoefficient = 0.47; // Drag coefficient for a sphere
+        particle.drag.area = 1 + (rand() % 10) / 10.0f; // Random area between 1.0 and 2.0
+
+        // Randomize mass
+        particle.mass = 50 + rand() % 101; // Random mass between 50 and 150
+
+        // Add the particle to the physics engine
+        engine.addPhysicsObject(std::make_unique<Particle>(particle));
+    }
 
     bool running = true;
     SDL_Event event;
 
-    spdlog::trace("Starting a new simulation...");
+    auto lastTime = std::chrono::high_resolution_clock::now(); 
+    int frameCount = 0;
+    float fps = 0.0f;
+
     while (running) {
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
+            if (event.type == SDL_EVENT_QUIT) 
+            {
                 running = false;
             }
         }
@@ -64,7 +68,18 @@ int main()
         
         spdlog::trace("Rendering objects...");
         renderer.renderObjects(engine.getPhysicsObjects(), interpolationFactor); // Now update the render with new positions using interpolationFactor
-        renderer.present();   
+        renderer.present();  
+
+        frameCount++;
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
+
+        if (duration >= 1000) { // Update FPS every second
+            fps = frameCount / (duration / 1000.0f);
+            frameCount = 0;
+            lastTime = currentTime;
+            spdlog::info("FPS: {:.2f}", fps); // Log FPS
+        }
     }
 
     spdlog::trace("Simulation finished.");

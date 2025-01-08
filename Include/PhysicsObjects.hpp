@@ -5,7 +5,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#define PARTICLE_SIZE 20
+#define PARTICLE_SIZE 5
 #define SCALING_FACTOR 1.0f
 
 struct VectorMagnitudes

@@ -30,13 +30,12 @@ Include/PhysicsObjects.hpp
 add_executable(${PROJECT_NAME} ${SRCS} ${HDRS})
 
 # Find SDL2 and SDL2_image
-find_package(SDL2 REQUIRED)
-
-# Include SDL2 and SDL2_image include directories
-target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
 
 # Link SDL2 and SDL2_image libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} m)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
+# target_link_libraries(sdl_issue PRIVATE SDL3::SDL3-shared)
+# target_link_libraries(sdl_issue PRIVATE SDL3::SDL3-static)
 
 # Add debug flags
 target_compile_options(${PROJECT_NAME} PRIVATE -ggdb3 -O0 -Wall)
