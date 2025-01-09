@@ -1,6 +1,6 @@
 #include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 300.0f
+#define SIMULATION_FPS 200.0f
 
 int main() 
 {
@@ -21,12 +21,12 @@ int main()
 
     srand(static_cast<unsigned int>(time(0))); // Seed the random number generator
     
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 1000; ++i) {
         BasicState particle;
 
         // Randomize position (within bounds)
-        particle.position.x = rand() % renderer.width; // Random x between 0 and renderer width
-        particle.position.y = rand() % renderer.height; // Random y between 0 and renderer height
+        particle.position.x = WINDOW_BORDER_BUFFER + (rand() % (renderer.width - WINDOW_BORDER_BUFFER * 2 + 1));
+        particle.position.y = WINDOW_BORDER_BUFFER + (rand() % (renderer.height - WINDOW_BORDER_BUFFER * 2 + 1));
 
         // Randomize velocity
         particle.velocity.x = (rand() % 200 - 100) / 10.0f; // Random velocity x between -10.0 and 10.0
