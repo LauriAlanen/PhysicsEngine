@@ -47,7 +47,7 @@ void PhysicsRenderer::present()
 
 void PhysicsRenderer::renderStationary()
 {
-    
+        
 
 }
 
@@ -59,7 +59,7 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
     float inverseInterpolationFactor = 1.0f - interpolationFactor;
     float adjustedHeight = this->height;
 
-    SDL_Color particleColor = {255, 164, 10, 255}; // Define particle color once
+    SDL_Color particleColor = {10, 150, 170, 255}; // Define particle color once
 
     for (const auto &physicsObject : physicsObjects)
     {

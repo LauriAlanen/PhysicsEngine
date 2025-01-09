@@ -10,6 +10,9 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #define WINDOW_BORDER_BUFFER 100
+// #define EULER
+#define VERLET
+
 
 struct Bounds {
     int x_min;  

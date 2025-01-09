@@ -30,7 +30,6 @@ double PhysicsEngine::update()
     {
         for (auto& object : this->physicsObjects) 
         {
-            object->previousState = object->currentState;  // Ensure the previousState is the same as currentState
             spdlog::trace("First iteration: Synchronizing previousState with currentState for object. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})",
                           object->currentState.position.x, object->currentState.position.y, 
                           object->currentState.velocity.x, object->currentState.velocity.y);
@@ -43,7 +42,15 @@ double PhysicsEngine::update()
         for (auto& object : this->physicsObjects) 
         {
             object->previousState = object->currentState;
-            object->update(this->deltaTime);
+            
+            #ifdef EULER
+            object->update_euler(this->deltaTime);
+            #endif
+            
+            #ifdef VERLET
+            object->update_verlet(this->deltaTime);
+            #endif
+            
             checkBounds(object);
             spdlog::trace("Object updated. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})", 
                           object->currentState.position.x, object->currentState.position.y, 

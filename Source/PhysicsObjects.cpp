@@ -5,29 +5,36 @@ Particle::~Particle()
 
 }
 
-void Particle::update(float deltaTime)
+void Particle::update_euler(float deltaTime)
 {
     currentState.totalForce = Vector2D(0, 0);
     applyDrag(); // Apply drag before calculating forces
 
     // Calculate forces (including the drag forces)
-    currentState.totalForce.y += currentState.mass * currentState.gravity;
+    currentState.totalForce.y += currentState.mass * (currentState.gravity + currentState.acceleration.y);
     currentState.totalForce.x += currentState.mass * currentState.acceleration.x;
-    currentState.totalForce.y += currentState.mass * currentState.acceleration.y;
 
     // Update velocities based on acceleration
-    currentState.velocity.x += (currentState.totalForce.x / currentState.mass) * (deltaTime * SCALING_FACTOR);
-    currentState.velocity.y += (currentState.totalForce.y / currentState.mass) * (deltaTime * SCALING_FACTOR);
+    currentState.velocity += (currentState.totalForce / currentState.mass) * (deltaTime * SCALING_FACTOR);
 
     // Update positions based on velocities
-    currentState.position.x += currentState.velocity.x * (deltaTime * SCALING_FACTOR);
-    currentState.position.y += currentState.velocity.y * (deltaTime * SCALING_FACTOR);
+    currentState.position += currentState.velocity * (deltaTime * SCALING_FACTOR);
 
-    // Update directional magnitudes
-    magnitudes.right = (currentState.velocity.x > 0) ? std::abs(currentState.velocity.x) : 0;
-    magnitudes.left = (currentState.velocity.x < 0) ? std::abs(currentState.velocity.x) : 0;
-    magnitudes.down = (currentState.velocity.y > 0) ? std::abs(currentState.velocity.y) : 0;
-    magnitudes.up = (currentState.velocity.y < 0) ? std::abs(currentState.velocity.y) : 0;
+    calculateMagnitudes(); // Used for visualization
+
+    previousState = currentState;  // Ensure the previousState is the same as currentState
+}
+
+void Particle::update_verlet(float deltaTime)
+{
+    currentState.totalForce = Vector2D(0, 0);
+    
+    applyDrag();
+    currentState.totalForce.y += currentState.mass * currentState.gravity;
+    
+    currentState.position = currentState.position * 2.0f - previousState.position + (currentState.totalForce / currentState.mass) * deltaTime * deltaTime;
+
+    previousState = currentState;  // Ensure the previousState is the same as currentState
 }
 
 void Particle::applyDrag()
@@ -46,4 +53,12 @@ void Particle::applyDrag()
 void Particle::applyForce(Vector2D forceVector)
 {
     currentState.totalForce += forceVector;
+}
+
+void Particle::calculateMagnitudes()
+{
+    magnitudes.right = (currentState.velocity.x > 0) ? std::abs(currentState.velocity.x) : 0;
+    magnitudes.left = (currentState.velocity.x < 0) ? std::abs(currentState.velocity.x) : 0;
+    magnitudes.down = (currentState.velocity.y > 0) ? std::abs(currentState.velocity.y) : 0;
+    magnitudes.up = (currentState.velocity.y < 0) ? std::abs(currentState.velocity.y) : 0;
 }

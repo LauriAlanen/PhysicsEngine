@@ -5,8 +5,8 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#define PARTICLE_SIZE 5
-#define SCALING_FACTOR 1.0f
+#define PARTICLE_SIZE 1
+#define SCALING_FACTOR 3.0f
 
 struct VectorMagnitudes
 {
@@ -79,9 +79,11 @@ class PhysicsObject
 {
 public:
     virtual ~PhysicsObject() = default;
-    virtual void update(float deltaTime) = 0;
+    virtual void update_euler(float deltaTime) = 0;
+    virtual void update_verlet(float deltaTime) = 0;
     virtual void applyDrag() = 0;
     virtual void applyForce(Vector2D forceVector) = 0;
+    virtual void calculateMagnitudes() = 0;
     BasicState currentState, previousState;
     VectorMagnitudes magnitudes;
 };
@@ -95,7 +97,9 @@ public:
     }
 
     ~Particle();
-    void update(float deltaTime) override;
+    void update_euler(float deltaTime) override;
+    void update_verlet(float deltaTime) override;
     void applyDrag() override;
     void applyForce(Vector2D forceVector) override;
+    void calculateMagnitudes() override;
 };
