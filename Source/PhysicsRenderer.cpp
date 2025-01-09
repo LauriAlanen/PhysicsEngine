@@ -47,6 +47,7 @@ void PhysicsRenderer::present()
 
 void PhysicsRenderer::renderStationary()
 {
+    
 
 }
 
@@ -55,38 +56,41 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
     SDL_Color clearColor = {0, 0, 0, 255};
     clearScreen(clearColor);
 
+    float inverseInterpolationFactor = 1.0f - interpolationFactor;
+    float adjustedHeight = this->height;
+
+    SDL_Color particleColor = {255, 164, 10, 255}; // Define particle color once
+
     for (const auto &physicsObject : physicsObjects)
     {
-        float interpolatedX = physicsObject->previousState.position.x * (1.0f - interpolationFactor) + physicsObject->currentState.position.x * interpolationFactor;
-        float interpolatedY = physicsObject->previousState.position.y * (1.0f - interpolationFactor) + physicsObject->currentState.position.y * interpolationFactor;
+        const auto &prevState = physicsObject->previousState.position;
+        const auto &currState = physicsObject->currentState.position;
+
+        float interpolatedX = prevState.x * inverseInterpolationFactor + currState.x * interpolationFactor;
+        float interpolatedY = prevState.y * inverseInterpolationFactor + currState.y * interpolationFactor;
 
         float cartesianX = interpolatedX;
-        float cartesianY = this->height - interpolatedY;
+        float cartesianY = adjustedHeight - interpolatedY;
 
-        SDL_FRect rect = {cartesianX, cartesianY, PARTICLE_SIZE, PARTICLE_SIZE};
-        SDL_Color color = {255, 164, 10, 255};
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        rect = {cartesianX, cartesianY, PARTICLE_SIZE, PARTICLE_SIZE};
+        SDL_SetRenderDrawColor(renderer, particleColor.r, particleColor.g, particleColor.b, particleColor.a);
         SDL_RenderFillRect(renderer, &rect);
 
+        #ifdef DRAW_FORCE_VECTORS
         renderForceVectors(physicsObject, cartesianX + (rect.w / 2), cartesianY + (rect.h / 2));
+        #endif
 
         spdlog::trace("Interpolation Factor: {:.4f}", interpolationFactor);
         spdlog::trace("Interpolated Position: x = {:.4f}, y = {:.4f}", interpolatedX, interpolatedY);
         spdlog::trace("Converted SDL Coordinates: x = {}, y = {}", cartesianX, cartesianY);
-        spdlog::trace("Previous State: x = {}, y = {}, vy = {:.4f}", 
-                        physicsObject->previousState.position.x, 
-                        physicsObject->previousState.position.y, 
-                        physicsObject->previousState.velocity.y);
-        spdlog::trace("Current State: x = {}, y = {}, vy = {:.4f}", 
-                        physicsObject->currentState.position.x, 
-                        physicsObject->currentState.position.y, 
-                        physicsObject->currentState.velocity.y);
-        spdlog::trace("Rendering object at ({}, {}), color ({}, {}, {}, {})", 
-                      cartesianX, cartesianY, color.r, color.g, color.b, color.a);
+        spdlog::trace("Previous State: x = {}, y = {}, vy = {:.4f}", prevState.x, prevState.y, physicsObject->previousState.velocity.y);
+        spdlog::trace("Current State: x = {}, y = {}, vy = {:.4f}", currState.x, currState.y, physicsObject->currentState.velocity.y);
+        spdlog::trace("Rendering object at ({}, {}), color ({}, {}, {}, {})", cartesianX, cartesianY, particleColor.r, particleColor.g, particleColor.b, particleColor.a);
     }
 }
 
-void PhysicsRenderer::drawArrow(int x, int y, int dx, int dy, int arrowHeadLength, int arrowHeadAngle) {
+void PhysicsRenderer::drawArrow(int x, int y, int dx, int dy, int arrowHeadLength, int arrowHeadAngle) 
+{
     int x2 = x + dx;
     int y2 = y + dy;
     SDL_RenderLine(renderer, x, y, x2, y2);
@@ -105,22 +109,24 @@ void PhysicsRenderer::drawArrow(int x, int y, int dx, int dy, int arrowHeadLengt
     SDL_RenderLine(renderer, x2, y2, x4, y4);
 }
 
-void PhysicsRenderer::renderForceVectors(const std::unique_ptr<PhysicsObject>& physicsObject, int x, int y) {
-    SDL_Color color = {0, 255, 0, 255}; // Green for force vectors
+void PhysicsRenderer::renderForceVectors(const std::unique_ptr<PhysicsObject>& physicsObject, int x, int y) 
+{
+    color = {0, 255, 0, 255}; // Green for force vectors
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
     int arrowHeadLength = PARTICLE_SIZE;
     int arrowHeadAngle = 30;
 
-    if (physicsObject->magnitudes.up > MAGNITUDE_ARROW_THRESHOLD) 
-        drawArrow(x, y, 0, physicsObject->magnitudes.up, arrowHeadLength, arrowHeadAngle); // Up
+    auto drawForceArrow = [&](int dx, int dy) 
+    {
+        if (abs(dx) > MAGNITUDE_ARROW_THRESHOLD || abs(dy) > MAGNITUDE_ARROW_THRESHOLD) 
+        {
+            drawArrow(x, y, dx, dy, arrowHeadLength, arrowHeadAngle);
+        }
+    };
 
-    if (physicsObject->magnitudes.down > MAGNITUDE_ARROW_THRESHOLD) 
-        drawArrow(x, y, 0, -physicsObject->magnitudes.down, arrowHeadLength, arrowHeadAngle);  // Down
-
-    if (physicsObject->magnitudes.right > MAGNITUDE_ARROW_THRESHOLD) 
-        drawArrow(x, y, physicsObject->magnitudes.right, 0, arrowHeadLength, arrowHeadAngle);  // Right
-
-    if (physicsObject->magnitudes.left > MAGNITUDE_ARROW_THRESHOLD) 
-        drawArrow(x, y, -physicsObject->magnitudes.left, 0, arrowHeadLength, arrowHeadAngle); // Left
+    drawForceArrow(0, physicsObject->magnitudes.up);     // Up
+    drawForceArrow(0, -physicsObject->magnitudes.down);  // Down
+    drawForceArrow(physicsObject->magnitudes.right, 0);  // Right
+    drawForceArrow(-physicsObject->magnitudes.left, 0);  // Left
 }

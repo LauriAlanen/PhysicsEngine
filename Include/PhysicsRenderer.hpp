@@ -11,13 +11,17 @@
 
 #define WINDOW_SIZE_W 1800
 #define WINDOW_SIZE_H 900
+
 #define MAGNITUDE_ARROW_THRESHOLD 5
+// #define DRAW_FORCE_VECTORS
 
 class PhysicsRenderer 
 {
     private:
         SDL_Window* window;
         SDL_Renderer* renderer;
+        SDL_FRect rect;
+        SDL_Color color;
 
     public:
         PhysicsRenderer(const char* title);
