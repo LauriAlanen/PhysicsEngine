@@ -20,7 +20,7 @@ void Particle::update_euler(float deltaTime)
     // Update positions based on velocities
     this->currentState.position += this->currentState.velocity * (deltaTime * SCALING_FACTOR);
 
-    calculateMagnitudes(); // Used for visualization
+    // calculateMagnitudes(); // Used for visualization
 }
 
 void Particle::update_verlet(float deltaTime)
