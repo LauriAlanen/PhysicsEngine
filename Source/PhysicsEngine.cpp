@@ -40,7 +40,7 @@ double PhysicsEngine::update()
             object->update_verlet(this->deltaTime);
             #endif
             
-            // resolveCollisions(object);
+            resolveCollisions(object);
         }
         this->accumulator -= deltaTime;
         this->simulationTime += deltaTime;
@@ -52,22 +52,18 @@ double PhysicsEngine::update()
 
 void PhysicsEngine::resolveCollisions(std::unique_ptr<PhysicsObject> &object)
 {
-    glm::vec2 halfBoundSize = boundingBox.position / 2.0f - glm::vec2(1.0f, 1.0f) * PARTICLE_SIZE;
-    spdlog::debug("Halfbound size is ({:.4f},{:.4f}) when bounding box is ({:.4f}, {:.4f}) and {:.4f} {:.4f}",
-    halfBoundSize.x, halfBoundSize.y, boundingBox.position.x, boundingBox.position.y, boundingBox.w, boundingBox.h);
-
-    if (abs(object->currentState.position.x) > halfBoundSize.x)
-    {
-        object->currentState.position.x = halfBoundSize.x * glm::sign(object->currentState.position.x);
-        object->currentState.velocity.x *= -1;
-        spdlog::debug("New Position for x is {:.4f} and velocity {:.4f}", object->currentState.position.x, object->currentState.velocity.x);
+    object->currentState.position.x = std::clamp(object->currentState.position.x, boundingBox.position.x + PARTICLE_SIZE, 
+                                                    boundingBox.position.x + boundingBox.w - PARTICLE_SIZE);
+    object->currentState.position.y = std::clamp(object->currentState.position.y, boundingBox.position.y + PARTICLE_SIZE, 
+                                                    boundingBox.position.y + boundingBox.w - PARTICLE_SIZE);
+    // Optionally, reverse the velocity if the objectangle is trying to move out of bounds
+    if (object->currentState.position.x - PARTICLE_SIZE == boundingBox.position.x || 
+                object->currentState.position.x == boundingBox.position.x + boundingBox.w - PARTICLE_SIZE) {
+        object->currentState.velocity.x *= -1; // Reverse velocity on X-axis if hitting the left or right side
     }
-    
-    if (abs(object->currentState.position.y) > halfBoundSize.y)
-    {
-        object->currentState.position.y = halfBoundSize.y * glm::sign(object->currentState.position.y);
-        object->currentState.velocity.y *= -1;
-        spdlog::debug("New Position for y is {:.4f} and velocity {:.4f}", object->currentState.position.y, object->currentState.velocity.y);
+    if (object->currentState.position.y - PARTICLE_SIZE == boundingBox.position.y ||
+                object->currentState.position.y == boundingBox.position.y + boundingBox.h - PARTICLE_SIZE) {
+        object->currentState.velocity.y *= -1; // Reverse velocity on Y-axis if hitting the top or bottom side
     }
 }
 

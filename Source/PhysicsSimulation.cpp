@@ -1,6 +1,6 @@
 #include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 1000.0f
+#define SIMULATION_FPS 500.0f
 
 int main() 
 {
@@ -38,7 +38,7 @@ int main()
 
         // Randomize acceleration
         particle.acceleration.x = 0; // Random acceleration x between -5.0 and 5.0
-        particle.acceleration.y = 0; // Random acceleration y between -5.0 and 5.0
+        particle.acceleration.y = 0; // Radom acceleration y between -5.0 and 5.0
 
         // Drag properties (constant or slightly varied)
         particle.drag.airDensity = 1.225; // Standard air density
