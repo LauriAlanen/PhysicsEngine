@@ -135,13 +135,6 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
         #ifdef DRAW_FORCE_VECTORS
         renderForceVectors(physicsObject, cartesianX + (frect.w / 2), cartesianY + (frect.h / 2));
         #endif
-
-        spdlog::trace("Interpolation Factor: {:.4f}", interpolationFactor);
-        spdlog::trace("Interpolated Position: x = {:.4f}, y = {:.4f}", interpolatedX, interpolatedY);
-        spdlog::trace("Converted SDL Coordinates: x = {}, y = {}", cartesianX, cartesianY);
-        spdlog::trace("Previous State: x = {}, y = {}, vy = {:.4f}", prevState.x, prevState.y, physicsObject->previousState.velocity.y);
-        spdlog::trace("Current State: x = {}, y = {}, vy = {:.4f}", currState.x, currState.y, physicsObject->currentState.velocity.y);
-        spdlog::trace("Rendering object at ({}, {}), color ({}, {}, {}, {})", cartesianX, cartesianY, particleColor.r, particleColor.g, particleColor.b, particleColor.a);
     }
 }
 
