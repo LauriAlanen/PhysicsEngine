@@ -6,7 +6,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <glm/glm.hpp>
 
-#define PARTICLE_SIZE 10
+#define PARTICLE_SIZE 50.0f
 #define SCALING_FACTOR 3.0f
 
 struct VectorMagnitudes
@@ -19,10 +19,10 @@ struct VectorMagnitudes
 
 struct BasicState 
 {
-    glm::vec2 position;
-    glm::vec2 velocity;
-    glm::vec2 acceleration;
-    glm::vec2 totalForce;  
+    glm::vec2 position = {0.0f, 0.0f};
+    glm::vec2 velocity = {0.0f, 0.0f};
+    glm::vec2 acceleration = {0.0f, 0.0f};
+    glm::vec2 totalForce = {0.0f, 0.0f};  
     float mass = 1.0f;
     static constexpr float gravity = -9.81f;
     struct Drag {
