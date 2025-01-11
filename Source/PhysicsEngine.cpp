@@ -60,10 +60,12 @@ void PhysicsEngine::resolveCollisions(std::unique_ptr<PhysicsObject> &object)
     if (object->currentState.position.x - PARTICLE_SIZE == boundingBox.position.x || 
                 object->currentState.position.x == boundingBox.position.x + boundingBox.w - PARTICLE_SIZE) {
         object->currentState.velocity.x *= -1; // Reverse velocity on X-axis if hitting the left or right side
+        object->currentState.acceleration.x = 0;
     }
     if (object->currentState.position.y - PARTICLE_SIZE == boundingBox.position.y ||
                 object->currentState.position.y == boundingBox.position.y + boundingBox.h - PARTICLE_SIZE) {
         object->currentState.velocity.y *= -1; // Reverse velocity on Y-axis if hitting the top or bottom side
+        object->currentState.acceleration.y = 0;
     }
 }
 
