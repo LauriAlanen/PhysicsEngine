@@ -11,6 +11,19 @@ PhysicsRenderer::PhysicsRenderer(const char* title)
         exit(1);
     }
 
+    if (TTF_Init() == 0) 
+    {
+        printf("Failed to initialize SDL_ttf: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    // Load generic use font
+    font = TTF_OpenFont(FONT_PATH, FONT_SIZE);
+    if (font == NULL) 
+    {
+        printf("Failed to load font: %s\n", SDL_GetError());
+    }
+
     if (!SDL_CreateWindowAndRenderer(title, WINDOW_SIZE_W, WINDOW_SIZE_H, 0, &window, &renderer)) 
     {
         spdlog::error("SDL_CreateWindowAndRenderer failed {}", SDL_GetError());
@@ -45,11 +58,54 @@ void PhysicsRenderer::present()
     spdlog::trace("Presenting rendered frame");
 }
 
-void PhysicsRenderer::renderStationary()
+void PhysicsRenderer::renderControls(int objectCount)
 {
-        
+    static int lastObjectCount = -1;
+    static SDL_Texture* cachedTexture = nullptr;
+    static SDL_FRect cachedRect;
 
+    if (lastObjectCount != objectCount)
+    {
+        lastObjectCount = objectCount;
+
+        if (cachedTexture)
+        {
+            SDL_DestroyTexture(cachedTexture);
+            cachedTexture = nullptr;
+        }
+
+        char text[MAX_TEXT_BUFFER];
+        snprintf(text, MAX_TEXT_BUFFER, "Particle count: %d", objectCount);
+
+        color = {255, 255, 255, 255}; // White
+        surface = TTF_RenderText_Solid(font, text, strlen(text), color);
+        if (!surface)
+        {
+            SDL_Log("Failed to render text surface: %s", SDL_GetError());
+            return;
+        }
+
+        cachedTexture = SDL_CreateTextureFromSurface(renderer, surface);
+        if (!cachedTexture)
+        {
+            SDL_Log("Failed to create texture: %s", SDL_GetError());
+            SDL_DestroySurface(surface);
+            return;
+        }
+
+        // Set rectangle dimensions
+        cachedRect = {10, 10, static_cast<float>(surface->w), static_cast<float>(surface->h)};
+
+        SDL_DestroySurface(surface);
+    }
+
+    // Always render the cached texture
+    if (cachedTexture)
+    {
+        SDL_RenderTexture(renderer, cachedTexture, NULL, &cachedRect);
+    }
 }
+
 
 void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> &physicsObjects, double interpolationFactor)
 {
@@ -72,12 +128,12 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
         float cartesianX = interpolatedX;
         float cartesianY = adjustedHeight - interpolatedY;
 
-        rect = {cartesianX, cartesianY, PARTICLE_SIZE, PARTICLE_SIZE};
+        frect = {cartesianX, cartesianY, PARTICLE_SIZE, PARTICLE_SIZE};
         SDL_SetRenderDrawColor(renderer, particleColor.r, particleColor.g, particleColor.b, particleColor.a);
-        SDL_RenderFillRect(renderer, &rect);
+        SDL_RenderFillRect(renderer, &frect);
 
         #ifdef DRAW_FORCE_VECTORS
-        renderForceVectors(physicsObject, cartesianX + (rect.w / 2), cartesianY + (rect.h / 2));
+        renderForceVectors(physicsObject, cartesianX + (frect.w / 2), cartesianY + (frect.h / 2));
         #endif
 
         spdlog::trace("Interpolation Factor: {:.4f}", interpolationFactor);

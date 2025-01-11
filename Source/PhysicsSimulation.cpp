@@ -1,6 +1,6 @@
 #include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 200.0f
+#define SIMULATION_FPS 500.0f
 
 int main() 
 {
@@ -21,7 +21,7 @@ int main()
 
     srand(static_cast<unsigned int>(time(0))); // Seed the random number generator
     
-    for (int i = 0; i < 1000; ++i) {
+    for (int i = 0; i < 1500; ++i) {
         BasicState particle;
 
         // Randomize position (within bounds)
@@ -29,12 +29,12 @@ int main()
         particle.position.y = WINDOW_BORDER_BUFFER + (rand() % (renderer.height - WINDOW_BORDER_BUFFER * 2 + 1));
 
         // Randomize velocity
-        particle.velocity.x = (rand() % 200 - 100) / 10.0f; // Random velocity x between -10.0 and 10.0
-        particle.velocity.y = (rand() % 200 - 100) / 10.0f; // Random velocity y between -10.0 and 10.0
+        particle.velocity.x = 0; // Random velocity x between -10.0 and 10.0
+        particle.velocity.y = 0; // Random velocity y between -10.0 and 10.0
 
         // Randomize acceleration
-        particle.acceleration.x = (rand() % 100 - 50) / 10.0f; // Random acceleration x between -5.0 and 5.0
-        particle.acceleration.y = (rand() % 100 - 50) / 10.0f; // Random acceleration y between -5.0 and 5.0
+        particle.acceleration.x = 0; // Random acceleration x between -5.0 and 5.0
+        particle.acceleration.y = 0; // Random acceleration y between -5.0 and 5.0
 
         // Drag properties (constant or slightly varied)
         particle.drag.airDensity = 1.225; // Standard air density
@@ -67,7 +67,8 @@ int main()
         double interpolationFactor = engine.update(); // Update physics and return the interpolationFactor
         
         spdlog::trace("Rendering objects...");
-        renderer.renderObjects(engine.getPhysicsObjects(), interpolationFactor); // Now update the render with new positions using interpolationFactor
+        renderer.renderObjects(engine.getPhysicsObjects(), interpolationFactor); // Now update_euler the render with new positions using interpolationFactor
+        renderer.renderControls(engine.getObjectsCount());
         renderer.present();  
 
         frameCount++;
