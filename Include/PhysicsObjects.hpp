@@ -6,7 +6,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <glm/glm.hpp>
 
-#define PARTICLE_SIZE 50.0f
+#define PARTICLE_SIZE 1.0f
 #define SCALING_FACTOR 3.0f
 
 struct VectorMagnitudes
