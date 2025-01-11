@@ -108,7 +108,7 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
 {
     float inverseInterpolationFactor = 1.0f - interpolationFactor;
 
-    color = {10, 150, 170, 255}; // Define particle color once
+    color = {255, 0, 0, 255}; // Define particle color once
 
     for (const auto &physicsObject : physicsObjects)
     {
@@ -187,7 +187,7 @@ void PhysicsRenderer::createBoundingBoxTexture(BoundingBox boundingBox)
     SDL_SetRenderTarget(this->renderer, this->texture);
     SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 0);
 
-    SDL_SetRenderDrawColor(this->renderer, 255, 125, 10, 255); // Set rectangle color
+    SDL_SetRenderDrawColor(this->renderer, 0, 0, 139, 255); // Set rectangle color
     this->frect = {boundingBox.position.x, boundingBox.position.y, boundingBox.w, boundingBox.h};
     SDL_RenderFillRect(this->renderer, &this->frect);
     
