@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include <PhysicsObjects.hpp>
+#include <PhysicsEngine.hpp>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -35,11 +36,13 @@ class PhysicsRenderer
         PhysicsRenderer(const char* title);
         ~PhysicsRenderer();
 
-        static int width, height;
+        static int w, h;
 
-        void clearScreen(SDL_Color color);
+        void clearScreen();
         void present();
         void renderControls(int objectCount);
+        void createBoundingBoxTexture(BoundingBox SDL_FRect);
+        void renderTexture();
         void renderObjects(std::vector<std::unique_ptr<PhysicsObject>> &physicsObjects, double interpolationFactor);
         void drawArrow(int x, int y, int dx, int dy, int arrowHeadLength, int arrowHeadAngle);
         void renderForceVectors(const std::unique_ptr<PhysicsObject>& physicsObject, int x, int y);

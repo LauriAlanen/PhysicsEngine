@@ -1,7 +1,7 @@
 #include <PhysicsRenderer.hpp>
 
-int PhysicsRenderer::height = 0;
-int PhysicsRenderer::width = 0;
+int PhysicsRenderer::h = 0;
+int PhysicsRenderer::w = 0;
 
 PhysicsRenderer::PhysicsRenderer(const char* title) 
 {
@@ -32,7 +32,7 @@ PhysicsRenderer::PhysicsRenderer(const char* title)
         SDL_Quit();
         exit(1);
     }
-    SDL_GetWindowSize(window, &PhysicsRenderer::width, &PhysicsRenderer::height);
+    SDL_GetWindowSize(window, &PhysicsRenderer::w, &PhysicsRenderer::h);
 
     spdlog::trace("PhysicsRenderer initialized successfully");
     spdlog::trace("PhysicsRenderer resources cleaned up");
@@ -41,15 +41,15 @@ PhysicsRenderer::PhysicsRenderer(const char* title)
 PhysicsRenderer::~PhysicsRenderer() 
 {
     SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(window);  
+    SDL_DestroyTexture(texture);  
     SDL_Quit();
 }
 
-void PhysicsRenderer::clearScreen(SDL_Color color) 
+void PhysicsRenderer::clearScreen() 
 {
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
-    spdlog::trace("Clearing screen with color ({}, {}, {}, {})", color.r, color.g, color.b, color.a);
 }
 
 void PhysicsRenderer::present() 
@@ -93,29 +93,22 @@ void PhysicsRenderer::renderControls(int objectCount)
             return;
         }
 
-        // Set rectangle dimensions
         cachedRect = {10, 10, static_cast<float>(surface->w), static_cast<float>(surface->h)};
 
         SDL_DestroySurface(surface);
     }
 
-    // Always render the cached texture
     if (cachedTexture)
     {
         SDL_RenderTexture(renderer, cachedTexture, NULL, &cachedRect);
     }
 }
 
-
 void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> &physicsObjects, double interpolationFactor)
 {
-    SDL_Color clearColor = {0, 0, 0, 255};
-    clearScreen(clearColor);
-
     float inverseInterpolationFactor = 1.0f - interpolationFactor;
-    float adjustedHeight = this->height;
 
-    SDL_Color particleColor = {10, 150, 170, 255}; // Define particle color once
+    color = {10, 150, 170, 255}; // Define particle color once
 
     for (const auto &physicsObject : physicsObjects)
     {
@@ -126,10 +119,10 @@ void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> 
         float interpolatedY = prevState.y * inverseInterpolationFactor + currState.y * interpolationFactor;
 
         float cartesianX = interpolatedX;
-        float cartesianY = adjustedHeight - interpolatedY;
+        float cartesianY = this->h - interpolatedY;
 
         frect = {cartesianX, cartesianY, PARTICLE_SIZE, PARTICLE_SIZE};
-        SDL_SetRenderDrawColor(renderer, particleColor.r, particleColor.g, particleColor.b, particleColor.a);
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_RenderFillRect(renderer, &frect);
 
         #ifdef DRAW_FORCE_VECTORS
@@ -178,4 +171,35 @@ void PhysicsRenderer::renderForceVectors(const std::unique_ptr<PhysicsObject>& p
     drawForceArrow(0, -physicsObject->magnitudes.down);  // Down
     drawForceArrow(physicsObject->magnitudes.right, 0);  // Right
     drawForceArrow(-physicsObject->magnitudes.left, 0);  // Left
+}
+
+
+void PhysicsRenderer::createBoundingBoxTexture(BoundingBox boundingBox)
+{
+    this->texture = SDL_CreateTexture(this->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, this->w, this->h);
+    if (!this->texture)
+    {
+        SDL_Log("Failed to create texture: %s", SDL_GetError());
+        SDL_DestroyTexture(this->texture);
+        return;
+    }
+
+    SDL_SetRenderTarget(this->renderer, this->texture);
+    SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 0);
+
+    SDL_SetRenderDrawColor(this->renderer, 255, 125, 10, 255); // Set rectangle color
+    this->frect = {boundingBox.position.x, boundingBox.position.y, boundingBox.w, boundingBox.h};
+    SDL_RenderFillRect(this->renderer, &this->frect);
+    
+    SDL_SetRenderTarget(this->renderer, nullptr);
+}
+
+void PhysicsRenderer::renderTexture()
+{
+    if (!texture) {
+        SDL_Log("No texture available !");
+        return;
+    }
+
+    SDL_RenderTexture(renderer, texture, nullptr, nullptr);
 }
