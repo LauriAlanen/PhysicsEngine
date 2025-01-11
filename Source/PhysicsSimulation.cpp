@@ -1,6 +1,6 @@
 #include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 500.0f
+#define SIMULATION_FPS 1000.0f
 
 int main() 
 {
@@ -10,23 +10,27 @@ int main()
 
     spdlog::trace("Initializing Physics Renderer...");
     PhysicsRenderer renderer("Physics Renderer");
+    spdlog::info("Window Size: ({}, {})", renderer.w, renderer.h); 
 
-    Bounds simulationBounds(0, 0, renderer.width, renderer.height);
-    spdlog::trace("Simulation bounds set: x_min = {}, y_min = {}, x_max = {}, y_max = {}",
-                  simulationBounds.x_min, simulationBounds.y_min, simulationBounds.x_max, simulationBounds.y_max);
+    BoundingBox boundingBox(glm::vec2(100.0f, 100.0f), renderer.w - 200.0f, renderer.h - 200.0f);
+    spdlog::info("BoundingBox Position: ({:.4f}, {:.4f}), Width: {:.4f}, Height: {:.4f}", 
+                 boundingBox.position.x, boundingBox.position.y, 
+                 boundingBox.w, boundingBox.h);
 
-
-	PhysicsEngine engine(SIMULATION_FPS, simulationBounds);
+	PhysicsEngine engine(SIMULATION_FPS, boundingBox);
     spdlog::trace("Physics Engine initialized with FPS: {}", SIMULATION_FPS);
 
     srand(static_cast<unsigned int>(time(0))); // Seed the random number generator
     
-    for (int i = 0; i < 1500; ++i) {
+    for (int i = 0; i < 1; ++i) {
         BasicState particle;
 
-        // Randomize position (within bounds)
-        particle.position.x = WINDOW_BORDER_BUFFER + (rand() % (renderer.width - WINDOW_BORDER_BUFFER * 2 + 1));
-        particle.position.y = WINDOW_BORDER_BUFFER + (rand() % (renderer.height - WINDOW_BORDER_BUFFER * 2 + 1));
+        // Randomize position (within SDL_FRect)
+        // particle.position.x = WINDOW_XY_BOUDS + (rand() % (renderer.w - WINDOW_XY_BOUNDS * 2 + 1));
+        // particle.position.y = WINDOW_XY_BOUNDS + (rand() % (renderer.h - WINDOW_XY_BOUNDS * 2 + 1));
+        particle.position.x = 500.0f;
+        particle.position.y = renderer.h / 2;
+        spdlog::info("Particle position ({},{})",  particle.position.x,  particle.position.y);
 
         // Randomize velocity
         particle.velocity.x = 0; // Random velocity x between -10.0 and 10.0
@@ -47,6 +51,8 @@ int main()
         // Add the particle to the physics engine
         engine.addPhysicsObject(std::make_unique<Particle>(particle));
     }
+    
+    renderer.createBoundingBoxTexture(boundingBox);
 
     bool running = true;
     SDL_Event event;
@@ -64,11 +70,12 @@ int main()
         }
 
         spdlog::trace("Updating physics engine...");
-        double interpolationFactor = engine.update(); // Update physics and return the interpolationFactor
+        double interpolationFactor = engine.update();
         
-        spdlog::trace("Rendering objects...");
-        renderer.renderObjects(engine.getPhysicsObjects(), interpolationFactor); // Now update_euler the render with new positions using interpolationFactor
-        renderer.renderControls(engine.getObjectsCount());
+        renderer.clearScreen();
+        renderer.renderTexture();
+        renderer.renderObjects(engine.getPhysicsObjects(), interpolationFactor); 
+        renderer.renderControls(engine.getPhysicsObjectCount());
         renderer.present();  
 
         frameCount++;

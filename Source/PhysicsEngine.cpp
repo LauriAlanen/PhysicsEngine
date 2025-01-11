@@ -1,9 +1,9 @@
 #include <PhysicsEngine.hpp>
 
-PhysicsEngine::PhysicsEngine(float fps, Bounds simulationBounds)
+PhysicsEngine::PhysicsEngine(float fps, BoundingBox boundingBox)
 {
     this->deltaTime = (1.0f / fps);
-    this->simulationBounds = simulationBounds;
+    this->boundingBox = boundingBox;
     this->previousTime = SDL_GetPerformanceCounter();
 }
 
@@ -26,19 +26,8 @@ double PhysicsEngine::update()
 
     this->accumulator += frameTime; 
 
-    if (this->simulationTime == 0.0) // Handle edge case so on first iteration previous and current states are the same so interpolation does work correctly
-    {
-        for (auto& object : this->physicsObjects) 
-        {
-            spdlog::trace("First iteration: Synchronizing previousState with currentState for object. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})",
-                          object->currentState.position.x, object->currentState.position.y, 
-                          object->currentState.velocity.x, object->currentState.velocity.y);
-        }
-    }
-
     while (this->accumulator >= this->deltaTime)
     {
-        // Integrate
         for (auto& object : this->physicsObjects) 
         {
             object->previousState = object->currentState;
@@ -51,26 +40,35 @@ double PhysicsEngine::update()
             object->update_verlet(this->deltaTime);
             #endif
             
-            resolveCollisions(object);
-            spdlog::trace("Object updated. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})", 
-                          object->currentState.position.x, object->currentState.position.y, 
-                          object->currentState.velocity.x, object->currentState.velocity.y);
+            // resolveCollisions(object);
         }
         this->accumulator -= deltaTime;
         this->simulationTime += deltaTime;
-        spdlog::trace("Updated object states. Accumulator: {:.4f}, Simulation time: {:.4f}", this->accumulator, this->simulationTime);
     }
 
     const double interpolationFactor = this->accumulator / deltaTime;
-    spdlog::trace("Interpolation factor: {:.4f}", interpolationFactor);
-    spdlog::trace("Simulation time: {}", this->simulationTime);
-
     return interpolationFactor;
 }
 
 void PhysicsEngine::resolveCollisions(std::unique_ptr<PhysicsObject> &object)
 {
-    // glm::vec2 halfBoundSize = WINDOW_BORDER_BUFFER / 2 - Eigen::Vector2 * PARTICLE_SIZE;
+    glm::vec2 halfBoundSize = boundingBox.position / 2.0f - glm::vec2(1.0f, 1.0f) * PARTICLE_SIZE;
+    spdlog::debug("Halfbound size is ({:.4f},{:.4f}) when bounding box is ({:.4f}, {:.4f}) and {:.4f} {:.4f}",
+    halfBoundSize.x, halfBoundSize.y, boundingBox.position.x, boundingBox.position.y, boundingBox.w, boundingBox.h);
+
+    if (abs(object->currentState.position.x) > halfBoundSize.x)
+    {
+        object->currentState.position.x = halfBoundSize.x * glm::sign(object->currentState.position.x);
+        object->currentState.velocity.x *= -1;
+        spdlog::debug("New Position for x is {:.4f} and velocity {:.4f}", object->currentState.position.x, object->currentState.velocity.x);
+    }
+    
+    if (abs(object->currentState.position.y) > halfBoundSize.y)
+    {
+        object->currentState.position.y = halfBoundSize.y * glm::sign(object->currentState.position.y);
+        object->currentState.velocity.y *= -1;
+        spdlog::debug("New Position for y is {:.4f} and velocity {:.4f}", object->currentState.position.y, object->currentState.velocity.y);
+    }
 }
 
 void PhysicsEngine::addPhysicsObject(std::unique_ptr<PhysicsObject> object)
@@ -85,7 +83,7 @@ std::vector<std::unique_ptr<PhysicsObject>>& PhysicsEngine::getPhysicsObjects()
     return this->physicsObjects;
 }
 
-int PhysicsEngine::getObjectsCount()
+int PhysicsEngine::getPhysicsObjectCount()
 {
     return this->physicsObjects.size();
 }
