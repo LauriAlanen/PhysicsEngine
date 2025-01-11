@@ -35,7 +35,7 @@ public:
     ~PhysicsEngine();
     double update();
     void addPhysicsObject(std::unique_ptr<PhysicsObject> object);
-    void checkBounds(std::unique_ptr<PhysicsObject> &object);
+    void resolveCollisions(std::unique_ptr<PhysicsObject> &object);
     std::vector<std::unique_ptr<PhysicsObject>>& getPhysicsObjects();
     int getObjectsCount();
 };

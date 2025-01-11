@@ -7,7 +7,7 @@ Particle::~Particle()
 
 void Particle::update_euler(float deltaTime)
 {
-    this->currentState.totalForce = Vector2D(0, 0);
+    this->currentState.totalForce = glm::vec2(0, 0);
     applyDrag(); // Apply drag before calculating forces
 
     // Calculate forces (including the drag forces)
@@ -36,7 +36,7 @@ void Particle::update_verlet(float deltaTime)
     this->currentState.velocity += this->currentState.velocity + this->currentState.acceleration * 0.5f * deltaTime;
 
     // Recalculate forces and acceleration based on new position
-    this->currentState.totalForce = Vector2D(0, 0); // Reset total force
+    this->currentState.totalForce = glm::vec2(0, 0); // Reset total force
     applyDrag(); // Apply drag or other forces
     this->currentState.totalForce.x += this->currentState.mass * this->currentState.acceleration.x;
     this->currentState.totalForce.y += this->currentState.mass * (this->currentState.acceleration.y + this->currentState.gravity);
@@ -49,18 +49,17 @@ void Particle::update_verlet(float deltaTime)
 
 void Particle::applyDrag()
 {
-    float velocityMagnitude = this->currentState.velocity.magnitude();
+    float velocityMagnitude = glm::length(this->currentState.velocity);
     spdlog::debug("Velocity Vector : {:.4f}", velocityMagnitude);
 
     if (velocityMagnitude > 0) {
         float dragFactor = 0.5 * this->currentState.drag.dragCoefficient * this->currentState.drag.airDensity * this->currentState.drag.area;
-        Vector2D dragForce = this->currentState.velocity.normalize() * (-dragFactor * velocityMagnitude * velocityMagnitude);
-        spdlog::debug("Applied dragForce {:.4f}, {:.4f} and unit vector is ({}, {})", dragForce.x, dragForce.y, this->currentState.velocity.normalize().x, this->currentState.velocity.normalize().y);
+        glm::vec2 dragForce = glm::normalize(this->currentState.velocity) * (-dragFactor * velocityMagnitude * velocityMagnitude);
         applyForce(dragForce);
     }
 }
 
-void Particle::applyForce(Vector2D forceVector)
+void Particle::applyForce(glm::vec2 forceVector)
 {
     this->currentState.totalForce += forceVector;
 }

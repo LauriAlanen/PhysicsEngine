@@ -51,7 +51,7 @@ double PhysicsEngine::update()
             object->update_verlet(this->deltaTime);
             #endif
             
-            checkBounds(object);
+            resolveCollisions(object);
             spdlog::trace("Object updated. Position: ({}, {}), Velocity: ({:.4f}, {:.4f})", 
                           object->currentState.position.x, object->currentState.position.y, 
                           object->currentState.velocity.x, object->currentState.velocity.y);
@@ -68,37 +68,15 @@ double PhysicsEngine::update()
     return interpolationFactor;
 }
 
-void PhysicsEngine::checkBounds(std::unique_ptr<PhysicsObject> &object)
+void PhysicsEngine::resolveCollisions(std::unique_ptr<PhysicsObject> &object)
 {
-    bool positionChanged = false;
-    
-    if (object->currentState.position.y >= this->simulationBounds.y_max - WINDOW_BORDER_BUFFER || object->currentState.position.y <= this->simulationBounds.y_min + WINDOW_BORDER_BUFFER)
-    {
-        object->currentState.velocity.y = 0;
-        object->currentState.acceleration.y = 0;
-        positionChanged = true;
-        spdlog::trace("Object out of bounds (Y-axis). Velocity set to 0.");
-    }
-
-    if (object->currentState.position.x >= this->simulationBounds.x_max - WINDOW_BORDER_BUFFER || object->currentState.position.x <= this->simulationBounds.x_min + WINDOW_BORDER_BUFFER)
-    {
-        object->currentState.velocity.x = 0;
-        object->currentState.acceleration.x = 0;
-        positionChanged = true;
-        spdlog::trace("Object out of bounds (X-axis). Velocity set to 0.");
-    }
-
-    if (positionChanged)
-    {
-        spdlog::trace("Object position and velocity updated after bounds check.");
-    }
+    // glm::vec2 halfBoundSize = WINDOW_BORDER_BUFFER / 2 - Eigen::Vector2 * PARTICLE_SIZE;
 }
 
 void PhysicsEngine::addPhysicsObject(std::unique_ptr<PhysicsObject> object)
 {
     this->physicsObjects.push_back(std::move(object));
     spdlog::trace("Simulatable object added. Total objects: {}", this->physicsObjects.size());
-
 }
 
 std::vector<std::unique_ptr<PhysicsObject>>& PhysicsEngine::getPhysicsObjects()

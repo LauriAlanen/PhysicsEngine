@@ -47,3 +47,6 @@ add_custom_target(copy_fonts ALL
     COMMENT "Copying fonts to build directory"
 )
 add_dependencies(${PROJECT_NAME} copy_fonts)
+
+find_package(glm CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
