@@ -1,6 +1,6 @@
 #include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 500.0f
+#define SIMULATION_FPS 100.0f
 
 int main() 
 {
@@ -10,35 +10,28 @@ int main()
 
     spdlog::trace("Initializing Physics Renderer...");
     PhysicsRenderer renderer("Physics Renderer");
-    spdlog::info("Window Size: ({}, {})", renderer.w, renderer.h); 
 
     BoundingBox boundingBox(glm::vec2(100.0f, 100.0f), renderer.w - 200.0f, renderer.h - 200.0f);
-    spdlog::info("BoundingBox Position: ({:.4f}, {:.4f}), Width: {:.4f}, Height: {:.4f}", 
-                 boundingBox.position.x, boundingBox.position.y, 
-                 boundingBox.w, boundingBox.h);
 
 	PhysicsEngine engine(SIMULATION_FPS, boundingBox);
     spdlog::trace("Physics Engine initialized with FPS: {}", SIMULATION_FPS);
 
     srand(static_cast<unsigned int>(time(0))); // Seed the random number generator
     
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 5000; ++i) {
         BasicState particle;
 
         // Randomize position (within SDL_FRect)
-        // particle.position.x = WINDOW_XY_BOUDS + (rand() % (renderer.w - WINDOW_XY_BOUNDS * 2 + 1));
-        // particle.position.y = WINDOW_XY_BOUNDS + (rand() % (renderer.h - WINDOW_XY_BOUNDS * 2 + 1));
-        particle.position.x = 500.0f;
-        particle.position.y = renderer.h / 2;
-        spdlog::info("Particle position ({},{})",  particle.position.x,  particle.position.y);
+        particle.position.x = boundingBox.position.x + (rand() % static_cast<int>((boundingBox.position.x + boundingBox.w - boundingBox.position.x * 2 + 1)));
+        particle.position.y = boundingBox.position.y + (rand() % static_cast<int>((boundingBox.position.y + boundingBox.h - boundingBox.position.y * 2 + 1)));
 
-        // Randomize velocity
-        particle.velocity.x = 0; // Random velocity x between -10.0 and 10.0
-        particle.velocity.y = 0; // Random velocity y between -10.0 and 10.0
+        // Randomize velocity (e.g., velocity between -10 and 10 for both x and y components)
+        particle.velocity.x = (rand() % 21 - 10); // Random velocity between -10 and 10
+        particle.velocity.y = (rand() % 21 - 10); // Random velocity between -10 and 10
 
-        // Randomize acceleration
-        particle.acceleration.x = 0; // Random acceleration x between -5.0 and 5.0
-        particle.acceleration.y = 0; // Radom acceleration y between -5.0 and 5.0
+        // Randomize acceleration (e.g., acceleration between -5 and 5 for both x and y components)
+        particle.acceleration.x = (rand() % 11 - 5); // Random acceleration between -5 and 5
+        particle.acceleration.y = (rand() % 11 - 5); // Random acceleration between -5 and 5
 
         // Drag properties (constant or slightly varied)
         particle.drag.airDensity = 1.225; // Standard air density
@@ -51,6 +44,7 @@ int main()
         // Add the particle to the physics engine
         engine.addPhysicsObject(std::make_unique<Particle>(particle));
     }
+
     
     renderer.createBoundingBoxTexture(boundingBox);
 
