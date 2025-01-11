@@ -9,17 +9,19 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#define WINDOW_BORDER_BUFFER 100
 #define EULER
 // #define VERLET
 
+struct BoundingBox
+{
+    glm::vec2 position;
+    float w;
+    float h;
 
-struct Bounds {
-    int x_min;  
-    int y_min;  
-    int x_max;  
-    int y_max;
+    BoundingBox(const glm::vec2& pos = glm::vec2(0.0f, 0.0f), float w = 0.0f, float h = 0.0f)
+        : position(pos), w(w), h(h) {}
 };
+
 
 class PhysicsEngine
 {
@@ -27,16 +29,16 @@ private:
     Uint64 previousTime, newTime;
     double accumulator, simulationTime;
     std::vector<std::unique_ptr<PhysicsObject>> physicsObjects;
-    Bounds simulationBounds;
+    BoundingBox boundingBox;
     double deltaTime;
 
 public:
-    PhysicsEngine(float fps, Bounds simulationBounds);
+    PhysicsEngine(float fps, BoundingBox boundingBox);
     ~PhysicsEngine();
     double update();
     void addPhysicsObject(std::unique_ptr<PhysicsObject> object);
     void resolveCollisions(std::unique_ptr<PhysicsObject> &object);
     std::vector<std::unique_ptr<PhysicsObject>>& getPhysicsObjects();
-    int getObjectsCount();
+    int getPhysicsObjectCount();
 };
 
