@@ -10,8 +10,8 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #define WINDOW_BORDER_BUFFER 100
-// #define EULER
-#define VERLET
+#define EULER
+// #define VERLET
 
 
 struct Bounds {
@@ -37,6 +37,6 @@ public:
     void addPhysicsObject(std::unique_ptr<PhysicsObject> object);
     void checkBounds(std::unique_ptr<PhysicsObject> &object);
     std::vector<std::unique_ptr<PhysicsObject>>& getPhysicsObjects();
-
+    int getObjectsCount();
 };
 

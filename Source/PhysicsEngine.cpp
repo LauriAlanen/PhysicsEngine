@@ -106,3 +106,8 @@ std::vector<std::unique_ptr<PhysicsObject>>& PhysicsEngine::getPhysicsObjects()
     spdlog::trace("Returning simulatable objects. Total objects: {}", this->physicsObjects.size());
     return this->physicsObjects;
 }
+
+int PhysicsEngine::getObjectsCount()
+{
+    return this->physicsObjects.size();
+}
