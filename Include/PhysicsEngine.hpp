@@ -15,13 +15,11 @@
 struct BoundingBox
 {
     glm::vec2 position;
-    float w;
-    float h;
+    glm::vec2 size;
 
-    BoundingBox(const glm::vec2& pos = glm::vec2(0.0f, 0.0f), float w = 0.0f, float h = 0.0f)
-        : position(pos), w(w), h(h) {}
+    BoundingBox(const glm::vec2& pos = glm::vec2(0.0f, 0.0f), const glm::vec2& size = glm::vec2(0.0f, 0.0f))
+        : position(pos), size(size) {}
 };
-
 
 class PhysicsEngine
 {
@@ -29,16 +27,19 @@ private:
     Uint64 previousTime, newTime;
     double accumulator, simulationTime;
     std::vector<std::unique_ptr<PhysicsObject>> physicsObjects;
-    BoundingBox boundingBox;
     double deltaTime;
+    BoundingBox boundingBox;
 
 public:
-    PhysicsEngine(float fps, BoundingBox boundingBox);
+    PhysicsEngine(float fps);
     ~PhysicsEngine();
     double update();
     void addPhysicsObject(std::unique_ptr<PhysicsObject> object);
     void resolveCollisions(std::unique_ptr<PhysicsObject> &object);
     std::vector<std::unique_ptr<PhysicsObject>>& getPhysicsObjects();
     int getPhysicsObjectCount();
+    void setBoundingBox(BoundingBox boundingBox);
+    void modifyBoundingBox(glm::vec2 position, glm::vec2 size);
+    BasicState generateRandomParticle(glm::vec2 position);
 };
 
