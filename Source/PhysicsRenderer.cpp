@@ -188,7 +188,7 @@ void PhysicsRenderer::createBoundingBoxTexture(BoundingBox boundingBox)
     SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 0);
 
     SDL_SetRenderDrawColor(this->renderer, 0, 0, 139, 255); // Set rectangle color
-    this->frect = {boundingBox.position.x, boundingBox.position.y, boundingBox.w, boundingBox.h};
+    this->frect = {boundingBox.position.x, boundingBox.position.y, boundingBox.size.x, boundingBox.size.y};
     SDL_RenderFillRect(this->renderer, &this->frect);
     
     SDL_SetRenderTarget(this->renderer, nullptr);
