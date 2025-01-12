@@ -14,6 +14,8 @@ Source/PhysicsSimulation.cpp
 Source/PhysicsObjects.cpp
 Source/EventManager.cpp
 Source/FPSTracker.cpp
+Source/SDLPrimitives.cpp
+Source/TextRenderer.cpp
 )
 
 set(HDRS
@@ -23,6 +25,8 @@ Include/PhysicsSimulation.hpp
 Include/PhysicsObjects.hpp
 Include/EventManager.hpp
 Include/FPSTracker.hpp
+Include/SDLPrimitives.hpp
+Include/TextRenderer.hpp
 )
 
 add_executable(${PROJECT_NAME} ${SRCS} ${HDRS})
