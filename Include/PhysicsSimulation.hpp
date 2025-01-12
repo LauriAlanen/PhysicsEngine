@@ -4,6 +4,7 @@
 #include <PhysicsEngine.hpp>
 #include <PhysicsObjects.hpp>
 #include <EventManager.hpp>
+#include <FPSTracker.hpp>
 #include <cstdlib> // For rand() and srand()
 #include <ctime>   // For time() to seed the random number generator
 #include <spdlog/spdlog.h>

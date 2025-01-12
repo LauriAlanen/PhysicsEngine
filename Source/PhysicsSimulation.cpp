@@ -21,15 +21,13 @@ int main()
 
     bool running = true;
 
-    auto lastTime = std::chrono::high_resolution_clock::now(); 
-    int frameCount = 0;
-    float fps = 0.0f;
-
     EventManager eventManager(renderer, engine, boundingBox);
+    FPSTracker fpsTracker;
 
     while (running) 
     {
         eventManager.pollEvents(running);
+        fpsTracker.updateFPS();
 
         double interpolationFactor = engine.update();
         
@@ -38,17 +36,6 @@ int main()
         renderer.renderObjects(engine.getPhysicsObjects(), interpolationFactor); 
         renderer.renderControls(engine.getPhysicsObjectCount());
         renderer.present();  
-
-        frameCount++;
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
-
-        if (duration >= 1000) { // Update FPS every second
-            fps = frameCount / (duration / 1000.0f);
-            frameCount = 0;
-            lastTime = currentTime;
-            spdlog::info("FPS: {:.2f}", fps); // Log FPS
-        }
     }
 
     spdlog::trace("Simulation finished.");
