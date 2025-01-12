@@ -15,3 +15,8 @@ void FPSTracker::updateFPS() {
         spdlog::info("FPS: {:.2f}", fps); // Log FPS
     }
 }
+
+float FPSTracker::getFPS()
+{
+    return this->fps;
+}

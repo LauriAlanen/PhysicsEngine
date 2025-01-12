@@ -8,6 +8,7 @@ class FPSTracker
 public:
     FPSTracker();
     void updateFPS();
+    float getFPS();
 
 private:
     int frameCount;
