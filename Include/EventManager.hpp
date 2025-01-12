@@ -18,4 +18,5 @@ private:
     PhysicsEngine& engine;
     BoundingBox& boundingBox;
     bool mousePressed;
+    float zoom = 1.0f;
 };

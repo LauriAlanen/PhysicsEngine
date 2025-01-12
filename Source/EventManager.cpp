@@ -3,7 +3,7 @@
 void EventManager::pollEvents(bool& running)
 {
     SDL_Event event;
-
+    SDL_Renderer* SDL_renderer = renderer.getSDL_Renderer();
     while (SDL_PollEvent(&event)) 
     {
         if (event.type == SDL_EVENT_QUIT) 
@@ -13,7 +13,16 @@ void EventManager::pollEvents(bool& running)
 
         if (event.type == SDL_EVENT_MOUSE_WHEEL)
         {
-            renderer.handleZoom(event);
+            if (event.wheel.y > 0)
+            {
+                this->zoom  *= 1.1f;
+            } 
+            else if (event.wheel.y < 0) 
+            {
+                this->zoom  *= 0.9f;
+            }
+
+            SDL_SetRenderScale(SDL_renderer, zoom, zoom);
         }
 
         if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED)
