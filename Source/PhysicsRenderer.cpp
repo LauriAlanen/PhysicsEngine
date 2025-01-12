@@ -173,7 +173,6 @@ void PhysicsRenderer::renderForceVectors(const std::unique_ptr<PhysicsObject>& p
     drawForceArrow(-physicsObject->magnitudes.left, 0);  // Left
 }
 
-
 void PhysicsRenderer::createBoundingBoxTexture(BoundingBox boundingBox)
 {
     this->texture = SDL_CreateTexture(this->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, this->w, this->h);
@@ -204,15 +203,7 @@ void PhysicsRenderer::renderTexture()
     SDL_RenderTexture(renderer, texture, nullptr, nullptr);
 }
 
-void PhysicsRenderer::handleZoom(SDL_Event& event) {
-    if (event.wheel.y > 0)
-    {
-        this->zoom  *= 1.1f;
-    } 
-    else if (event.wheel.y < 0) 
-    {
-        this->zoom  *= 0.9f;
-    }
-
-    SDL_SetRenderScale(renderer, zoom, zoom);
+SDL_Renderer* PhysicsRenderer::getSDL_Renderer()
+{
+    return renderer;
 }

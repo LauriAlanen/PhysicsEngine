@@ -48,4 +48,5 @@ class PhysicsRenderer
         void drawArrow(int x, int y, int dx, int dy, int arrowHeadLength, int arrowHeadAngle);
         void renderForceVectors(const std::unique_ptr<PhysicsObject>& physicsObject, int x, int y);
         void handleZoom(SDL_Event& event);
+        SDL_Renderer* getSDL_Renderer();
 };
