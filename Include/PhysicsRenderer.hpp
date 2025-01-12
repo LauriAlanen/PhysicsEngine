@@ -1,24 +1,34 @@
 #pragma once
 
-#include <SDL3/SDL.h>
-#include <SDL3_ttf/SDL_ttf.h>
 #include <iostream>
 #include <vector>
 #include <memory>
+
 #include <PhysicsObjects.hpp>
 #include <PhysicsEngine.hpp>
+#include <TextRenderer.hpp>
+
+#include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #define WINDOW_SIZE_W 1800
 #define WINDOW_SIZE_H 900
 
-#define FONT_PATH "fonts/OpenSans-Regular.ttf"
-#define FONT_SIZE 10
 #define MAX_TEXT_BUFFER 100
+#define DRAW 1
+#define NO_DRAW 0
 
 #define MAGNITUDE_ARROW_THRESHOLD 5
 // #define DRAW_FORCE_VECTORS
+
+struct Controls
+{
+    float renderfps;
+    float physicsFps;
+    int particleCount;
+};
 
 class PhysicsRenderer 
 {
@@ -28,9 +38,9 @@ class PhysicsRenderer
         SDL_FRect frect;
         SDL_Rect rect;
         SDL_Color color;
-        SDL_Surface *surface;
-        TTF_Font *font;
-        SDL_Texture *texture;
+        SDL_Surface* surface;
+        TTF_Font* font;
+        SDL_Texture* texture;
         float zoom = 1.0f;
 
     public:
@@ -41,7 +51,7 @@ class PhysicsRenderer
 
         void clearScreen();
         void present();
-        void renderControls(int objectCount);
+        void renderControls(Controls controls);
         void createBoundingBoxTexture(BoundingBox SDL_FRect);
         void renderTexture();
         void renderObjects(std::vector<std::unique_ptr<PhysicsObject>> &physicsObjects, double interpolationFactor);
@@ -50,3 +60,4 @@ class PhysicsRenderer
         void handleZoom(SDL_Event& event);
         SDL_Renderer* getSDL_Renderer();
 };
+

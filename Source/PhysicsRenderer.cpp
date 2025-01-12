@@ -3,27 +3,12 @@
 int PhysicsRenderer::h = 0;
 int PhysicsRenderer::w = 0;
 
-PhysicsRenderer::PhysicsRenderer(const char* title) 
+PhysicsRenderer::PhysicsRenderer(const char* title)
 {
     if (SDL_InitSubSystem(SDL_INIT_VIDEO) == 0) 
     {
         spdlog::error("Error initializing SDL: {}", SDL_GetError());
         exit(1);
-    }
-
-    if (TTF_Init() == 0) 
-    {
-        spdlog::error("Failed to initialize SDL_ttf: {}", SDL_GetError());
-        exit(1);
-    }
-
-    // Load generic use font
-    char path[MAX_TEXT_BUFFER];
-    snprintf(path, MAX_TEXT_BUFFER, "%s%s", SDL_GetBasePath(), FONT_PATH);
-    font = TTF_OpenFont(path, FONT_SIZE);
-    if (font == NULL) 
-    {
-        spdlog::error("Failed to load font: {}", SDL_GetError());
     }
 
     if (!SDL_CreateWindowAndRenderer(title, WINDOW_SIZE_W, WINDOW_SIZE_H, 0, &window, &renderer)) 
@@ -34,10 +19,11 @@ PhysicsRenderer::PhysicsRenderer(const char* title)
         SDL_Quit();
         exit(1);
     }
+
     SDL_GetWindowSize(window, &PhysicsRenderer::w, &PhysicsRenderer::h);
 }
 
-PhysicsRenderer::~PhysicsRenderer() 
+PhysicsRenderer::~PhysicsRenderer()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);  
@@ -55,53 +41,6 @@ void PhysicsRenderer::present()
 {
     SDL_RenderPresent(renderer);
     spdlog::trace("Presenting rendered frame");
-}
-
-// Do a seperate function that can intelligently text on screen
-void PhysicsRenderer::renderControls(int objectCount)
-{
-    static int lastObjectCount = -1;
-    static SDL_Texture* cachedTexture = nullptr;
-    static SDL_FRect cachedRect;
-
-    if (lastObjectCount != objectCount)
-    {
-        lastObjectCount = objectCount;
-
-        if (cachedTexture)
-        {
-            SDL_DestroyTexture(cachedTexture);
-            cachedTexture = nullptr;
-        }
-
-        char text[MAX_TEXT_BUFFER];
-        snprintf(text, MAX_TEXT_BUFFER, "Particle count: %d", objectCount);
-
-        color = {255, 255, 255, 255}; // White
-        surface = TTF_RenderText_Solid(font, text, strlen(text), color);
-        if (!surface)
-        {
-            spdlog::error("Failed to render text surface: {}", SDL_GetError());
-            return;
-        }
-
-        cachedTexture = SDL_CreateTextureFromSurface(renderer, surface);
-        if (!cachedTexture)
-        {
-            spdlog::error("Failed to create texture: {}", SDL_GetError());
-            SDL_DestroySurface(surface);
-            return;
-        }
-
-        cachedRect = {10, 10, static_cast<float>(surface->w), static_cast<float>(surface->h)};
-
-        SDL_DestroySurface(surface);
-    }
-
-    if (cachedTexture)
-    {
-        SDL_RenderTexture(renderer, cachedTexture, NULL, &cachedRect);
-    }
 }
 
 void PhysicsRenderer::renderObjects(std::vector<std::unique_ptr<PhysicsObject>> &physicsObjects, double interpolationFactor)
@@ -206,4 +145,31 @@ void PhysicsRenderer::renderTexture()
 SDL_Renderer* PhysicsRenderer::getSDL_Renderer()
 {
     return renderer;
+}
+
+void PhysicsRenderer::renderControls(Controls controls)
+{
+    static int lastObjectCount = -1;
+    char text[MAX_TEXT_BUFFER];
+    bool draw = NO_DRAW;
+
+    static TextRenderer renderFPSRenderer(renderer);
+    static TextRenderer particleCountRenderer(renderer);
+
+    if (lastObjectCount != controls.particleCount)
+    {
+        snprintf(text, MAX_TEXT_BUFFER, "Particle count: %d", controls.particleCount);
+        lastObjectCount = controls.particleCount;
+        draw = DRAW;
+    }
+    particleCountRenderer.RenderText(text, 10, 10, draw);
+
+    static float lastFPS = -1.0f;
+    if (static_cast<int>(lastFPS) != static_cast<int>(controls.renderfps))
+    {
+        snprintf(text, MAX_TEXT_BUFFER, "Render FPS: %d", static_cast<int>(controls.renderfps));
+        lastFPS = controls.renderfps;
+        draw = DRAW;
+    }
+    renderFPSRenderer.RenderText(text, 10, 20, draw);
 }
