@@ -13,7 +13,7 @@
 #define WINDOW_SIZE_W 1800
 #define WINDOW_SIZE_H 900
 
-#define FONT_PATH "Assets/fonts/OpenSans-Regular.ttf"
+#define FONT_PATH "fonts/OpenSans-Regular.ttf"
 #define FONT_SIZE 10
 #define MAX_TEXT_BUFFER 100
 
@@ -31,6 +31,7 @@ class PhysicsRenderer
         SDL_Surface *surface;
         TTF_Font *font;
         SDL_Texture *texture;
+        float zoom = 1.0f;
 
     public:
         PhysicsRenderer(const char* title);
@@ -46,4 +47,5 @@ class PhysicsRenderer
         void renderObjects(std::vector<std::unique_ptr<PhysicsObject>> &physicsObjects, double interpolationFactor);
         void drawArrow(int x, int y, int dx, int dy, int arrowHeadLength, int arrowHeadAngle);
         void renderForceVectors(const std::unique_ptr<PhysicsObject>& physicsObject, int x, int y);
+        void handleZoom(SDL_Event& event);
 };

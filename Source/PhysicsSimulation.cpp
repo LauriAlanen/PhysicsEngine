@@ -61,6 +61,11 @@ int main()
             {
                 running = false;
             }
+
+            if (event.type == SDL_EVENT_MOUSE_WHEEL)
+            {
+                renderer.handleZoom(event);
+            }
         }
 
         spdlog::trace("Updating physics engine...");

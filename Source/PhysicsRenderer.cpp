@@ -13,15 +13,17 @@ PhysicsRenderer::PhysicsRenderer(const char* title)
 
     if (TTF_Init() == 0) 
     {
-        printf("Failed to initialize SDL_ttf: %s\n", SDL_GetError());
+        spdlog::error("Failed to initialize SDL_ttf: {}", SDL_GetError());
         exit(1);
     }
 
     // Load generic use font
-    font = TTF_OpenFont(FONT_PATH, FONT_SIZE);
+    char path[MAX_TEXT_BUFFER];
+    snprintf(path, MAX_TEXT_BUFFER, "%s%s", SDL_GetBasePath(), FONT_PATH);
+    font = TTF_OpenFont(path, FONT_SIZE);
     if (font == NULL) 
     {
-        printf("Failed to load font: %s\n", SDL_GetError());
+        spdlog::error("Failed to load font: {}", SDL_GetError());
     }
 
     if (!SDL_CreateWindowAndRenderer(title, WINDOW_SIZE_W, WINDOW_SIZE_H, 0, &window, &renderer)) 
@@ -33,9 +35,6 @@ PhysicsRenderer::PhysicsRenderer(const char* title)
         exit(1);
     }
     SDL_GetWindowSize(window, &PhysicsRenderer::w, &PhysicsRenderer::h);
-
-    spdlog::trace("PhysicsRenderer initialized successfully");
-    spdlog::trace("PhysicsRenderer resources cleaned up");
 }
 
 PhysicsRenderer::~PhysicsRenderer() 
@@ -58,6 +57,7 @@ void PhysicsRenderer::present()
     spdlog::trace("Presenting rendered frame");
 }
 
+// Do a seperate function that can intelligently text on screen
 void PhysicsRenderer::renderControls(int objectCount)
 {
     static int lastObjectCount = -1;
@@ -81,14 +81,14 @@ void PhysicsRenderer::renderControls(int objectCount)
         surface = TTF_RenderText_Solid(font, text, strlen(text), color);
         if (!surface)
         {
-            SDL_Log("Failed to render text surface: %s", SDL_GetError());
+            spdlog::error("Failed to render text surface: {}", SDL_GetError());
             return;
         }
 
         cachedTexture = SDL_CreateTextureFromSurface(renderer, surface);
         if (!cachedTexture)
         {
-            SDL_Log("Failed to create texture: %s", SDL_GetError());
+            spdlog::error("Failed to create texture: {}", SDL_GetError());
             SDL_DestroySurface(surface);
             return;
         }
@@ -179,7 +179,7 @@ void PhysicsRenderer::createBoundingBoxTexture(BoundingBox boundingBox)
     this->texture = SDL_CreateTexture(this->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, this->w, this->h);
     if (!this->texture)
     {
-        SDL_Log("Failed to create texture: %s", SDL_GetError());
+        spdlog::error("Failed to create texture: {}", SDL_GetError());
         SDL_DestroyTexture(this->texture);
         return;
     }
@@ -197,9 +197,22 @@ void PhysicsRenderer::createBoundingBoxTexture(BoundingBox boundingBox)
 void PhysicsRenderer::renderTexture()
 {
     if (!texture) {
-        SDL_Log("No texture available !");
+        spdlog::error("No texture available !");
         return;
     }
 
     SDL_RenderTexture(renderer, texture, nullptr, nullptr);
+}
+
+void PhysicsRenderer::handleZoom(SDL_Event& event) {
+    if (event.wheel.y > 0)
+    {
+        this->zoom  *= 1.1f;
+    } 
+    else if (event.wheel.y < 0) 
+    {
+        this->zoom  *= 0.9f;
+    }
+
+    SDL_SetRenderScale(renderer, zoom, zoom);
 }
