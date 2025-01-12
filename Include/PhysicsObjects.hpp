@@ -6,7 +6,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <glm/glm.hpp>
 
-#define PARTICLE_SIZE 1.0f
+#define PARTICLE_SIZE 2.0f
 #define SCALING_FACTOR 3.0f
 
 struct VectorMagnitudes
@@ -19,10 +19,11 @@ struct VectorMagnitudes
 
 struct BasicState 
 {
-    glm::vec2 position = {0.0f, 0.0f};
-    glm::vec2 velocity = {0.0f, 0.0f};
-    glm::vec2 acceleration = {0.0f, 0.0f};
-    glm::vec2 totalForce = {0.0f, 0.0f};  
+    glm::vec2 position = {1.0f, 1.0f};
+    glm::vec2 velocity = {1.0f, 1.0f};
+    glm::vec2 acceleration = {1.0f, 1.0f};
+    glm::vec2 totalForce = {1.0f, 1.0f};  
+    glm::vec2 size = {1.0f, 1.0f};
     float mass = 1.0f;
     static constexpr float gravity = -9.81f;
     struct Drag {
@@ -36,8 +37,8 @@ class PhysicsObject
 {
 public:
     virtual ~PhysicsObject() = default;
-    virtual void update_euler(float deltaTime) = 0;
-    virtual void update_verlet(float deltaTime) = 0;
+    virtual void updateEuler(float deltaTime) = 0;
+    virtual void updateVerlet(float deltaTime) = 0;
     virtual void applyDrag() = 0;
     virtual void applyForce(glm::vec2 forceVector) = 0;
     virtual void calculateMagnitudes() = 0;
@@ -48,14 +49,10 @@ public:
 class Particle : public PhysicsObject
 {
 public:
-    Particle(BasicState currentState)
-    {
-        this->currentState = currentState;
-    }
-
+    Particle(BasicState currentState);
     ~Particle();
-    void update_euler(float deltaTime) override;
-    void update_verlet(float deltaTime) override;
+    void updateEuler(float deltaTime) override;
+    void updateVerlet(float deltaTime) override;
     void applyDrag() override;
     void applyForce(glm::vec2 forceVector) override;
     void calculateMagnitudes() override;

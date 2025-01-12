@@ -1,11 +1,16 @@
 #include <PhysicsObjects.hpp>
 
+Particle::Particle(BasicState currentState)
+{
+    this->currentState = currentState;
+}
+
 Particle::~Particle()
 {
 
 }
 
-void Particle::update_euler(float deltaTime)
+void Particle::updateEuler(float deltaTime)
 {
     this->currentState.totalForce = glm::vec2(0, 0);
     applyDrag(); // Apply drag before calculating forces
@@ -23,29 +28,17 @@ void Particle::update_euler(float deltaTime)
     // calculateMagnitudes(); // Used for visualization
 }
 
-void Particle::update_verlet(float deltaTime)
+void Particle::updateVerlet(float deltaTime)
 {
-    // Calculate initial acceleration
-    this->currentState.acceleration = this->currentState.totalForce / this->currentState.mass;
+    this->currentState.totalForce = glm::vec2(0, 0);
+    // applyDrag(); // Apply drag before calculating forces
 
-    // Update position using current velocity and acceleration
-    this->currentState.position += this->currentState.velocity * deltaTime +
-                             (this->currentState.acceleration * 0.5f * deltaTime * deltaTime);
+    currentState.totalForce.y += currentState.gravity * currentState.mass;
 
-    // Intermediate velocity update
-    this->currentState.velocity += this->currentState.velocity + this->currentState.acceleration * 0.5f * deltaTime;
-
-    // Recalculate forces and acceleration based on new position
-    this->currentState.totalForce = glm::vec2(0, 0); // Reset total force
-    applyDrag(); // Apply drag or other forces
-    this->currentState.totalForce.x += this->currentState.mass * this->currentState.acceleration.x;
-    this->currentState.totalForce.y += this->currentState.mass * (this->currentState.acceleration.y + this->currentState.gravity);
-
-    this->currentState.acceleration = this->currentState.totalForce / this->currentState.mass;
-
-    this->currentState.velocity += this->currentState.acceleration * 0.5f * deltaTime;
+    currentState.velocity = currentState.position - previousState.position;
+    currentState.position = currentState.position + currentState.velocity + (currentState.totalForce / currentState.mass) * deltaTime * deltaTime;
+    currentState.acceleration = {0 ,0};
 }
-
 
 void Particle::applyDrag()
 {
