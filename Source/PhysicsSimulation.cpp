@@ -1,15 +1,13 @@
 #include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 100.0f
+#define SIMULATION_FPS 60.0f
 
 int main() 
 {
-    spdlog::set_level(spdlog::level::info); // Set global log level to debug
-    // auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/debug_log.txt");
-    // spdlog::set_default_logger(file_logger);
-
-    spdlog::trace("Initializing Physics Renderer...");
+    spdlog::set_level(spdlog::level::warn); // Set global log level
     PhysicsRenderer renderer("Physics Renderer");
+    
+    SDLPrimitives primitives(renderer);
 
 	PhysicsEngine engine(SIMULATION_FPS);
     BoundingBox boundingBox(glm::vec2(0, 0), glm::vec2(renderer.w, renderer.h));
@@ -23,18 +21,23 @@ int main()
 
     EventManager eventManager(renderer, engine, boundingBox);
     FPSTracker fpsTracker;
-
+    Controls controls;
     while (running) 
     {
         eventManager.pollEvents(running);
         fpsTracker.updateFPS();
 
         double interpolationFactor = engine.update();
-        
+
         renderer.clearScreen();
         renderer.renderTexture();
         renderer.renderObjects(engine.getPhysicsObjects(), interpolationFactor); 
-        renderer.renderControls(engine.getPhysicsObjectCount());
+
+        controls.particleCount = engine.getPhysicsObjectCount();
+        controls.physicsFps = SIMULATION_FPS;
+        controls.renderfps = fpsTracker.getFPS();
+        renderer.renderControls(controls);
+        
         renderer.present();  
     }
 
