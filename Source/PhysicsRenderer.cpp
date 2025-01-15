@@ -147,6 +147,11 @@ SDL_Renderer* PhysicsRenderer::getSDL_Renderer()
     return renderer;
 }
 
+SDL_Texture* PhysicsRenderer::getSDL_Texture()
+{
+    return texture;
+}
+
 void PhysicsRenderer::renderControls(Controls controls)
 {
     static int lastObjectCount = -1;

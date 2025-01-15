@@ -59,5 +59,7 @@ class PhysicsRenderer
         void renderForceVectors(const std::unique_ptr<PhysicsObject>& physicsObject, int x, int y);
         void handleZoom(SDL_Event& event);
         SDL_Renderer* getSDL_Renderer();
+        SDL_Texture* getSDL_Texture();
+
 };
 
