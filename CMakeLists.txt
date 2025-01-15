@@ -16,6 +16,7 @@ Source/EventManager.cpp
 Source/FPSTracker.cpp
 Source/SDLPrimitives.cpp
 Source/TextRenderer.cpp
+Source/SpatialHash.cpp
 )
 
 set(HDRS
@@ -27,6 +28,7 @@ Include/EventManager.hpp
 Include/FPSTracker.hpp
 Include/SDLPrimitives.hpp
 Include/TextRenderer.hpp
+Include/SpatialHash.hpp
 )
 
 add_executable(${PROJECT_NAME} ${SRCS} ${HDRS})

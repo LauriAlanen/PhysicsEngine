@@ -1,12 +1,13 @@
 #include <PhysicsSimulation.hpp>
 
-#define SIMULATION_FPS 60.0f
+#define SIMULATION_FPS 100.0f
 
 int main() 
 {
-    spdlog::set_level(spdlog::level::warn); // Set global log level
+    spdlog::set_level(spdlog::level::info); // Set global log level
     PhysicsRenderer renderer("Physics Renderer");
     
+
     SDLPrimitives primitives(renderer);
 
 	PhysicsEngine engine(SIMULATION_FPS);
@@ -15,7 +16,8 @@ int main()
 
     srand(static_cast<unsigned int>(time(0))); // Seed the random number generator
 
-    renderer.createBoundingBoxTexture(boundingBox);
+    renderer.createBoundingBoxTexture(boundingBox); // Draw a grid because renderer is given as parameter
+    SpatialHash spatialHash(renderer, boundingBox);
 
     bool running = true;
 
